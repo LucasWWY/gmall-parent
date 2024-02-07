@@ -1,0 +1,33 @@
+server:
+  port: 80 # 监听80，web访问默认端口
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: product_service # 路由id
+          uri: lb://service-product # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
+          predicates: # 断言
+            - Path=/admin/product/**
+      globalcors:
+        cors-configurations:
+          '[/**]': #所有请求
+            allowedOrigins: "*" #允许所有来源
+            allowedMethods: "*" #允许所有方式 GET POST DELETE ....
+            allowedHeaders: "*"
+            allowCredentials: true #跨域携带Cookie
+
+#spring:
+#  zipkin:
+#    base-url: http://192.168.241.188:9411
+#    sender:
+#      type: web # 使用http方式发送
+#  # zipkin链路追踪需要sleuth采样
+#  sleuth:
+#    sampler:
+#      rate: 100 # 采样率
+
+# 每个microservice都有自己的application.yml文件
+# 且都要配置spring.zipkin.baseUrl和spring.sleuth.sampler.rate，有点麻烦，可以配置到nacos
+# 创建一个 shared config: zipkin.yml
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.gmall.service.product.mapper.BaseAttrInfoMapper">
+
+    <resultMap id="BaseAttrInfoMap" type="com.example.gmall.service.product.entity.BaseAttrInfo" autoMapping="true">
+        <!--autoMapping="true" 只要符合驼峰映射 就会自动映射-->
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <!--<result property="attrName" column="attr_name" jdbcType="VARCHAR"/>-->
+        <!--<result property="categoryId" column="category_id" jdbcType="BIGINT"/>-->
+        <!--<result property="categoryLevel" column="category_level" jdbcType="INTEGER"/>-->
+        <collection property="attrValueList" ofType="com.example.gmall.service.product.entity.BaseAttrValue">
+            <id property="id" column="attr_value_id" jdbcType="BIGINT"/>
+            <!--<result property="valueName" column="value_name" jdbcType="VARCHAR"/>-->
+            <!--<result property="attrId" column="attr_id" jdbcType="BIGINT"/>-->
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,attr_name,category_id,
+        category_level
+    </sql>
+    <select id="getAttrInfoAndValue" resultMap="BaseAttrInfoMap">
+        SELECT  bai.id,
+                bai.attr_name,
+                bai.category_id,
+                bai.category_level,
+                bav.id attr_value_id,
+                bav.value_name,
+                bav.attr_id
+            FROM `base_attr_info` bai
+            LEFT JOIN `base_attr_value` bav ON bai.id=bav.attr_id
+                            WHERE (bai.`category_id`=#{category1Id} AND bai.`category_level`=1)
+                               <if test="category2Id != 0"> --0代表该分类没有被选择
+                                   OR (bai.`category_id`=#{category2Id} AND bai.`category_level`=2)
+                               </if>
+                               <if test="category3Id != 0">
+                                   OR (bai.`category_id`=#{category3Id} AND bai.`category_level`=3)
+                               </if>
+    </select>
+</mapper>

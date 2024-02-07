@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: server-gateway
+  cloud:
+    nacos:
+      server-addr: 192.168.241.188:8848
+      config:
+        shared-configs[0].data-id: zipkin.yml # 从nacos读取共享配置zipkin.yml
+
