@@ -16,3 +16,11 @@ spring:
 # 每个microservice都有自己的application.yml文件
 # 且都要配置spring.zipkin.baseUrl和spring.sleuth.sampler.rate，有点麻烦，可以配置到nacos
 # 创建一个 shared config: zipkin.yml
+
+app:
+    minio:
+        endpoint: http://192.168.241.188:9000
+        access-key: admin
+        secret-key: admin123456
+        bucket-name: mall-oss
+
