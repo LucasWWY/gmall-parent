@@ -2,13 +2,11 @@ package com.example.gmall.service.product.controller;
 
 import com.example.gmall.common.result.Result;
 import com.example.gmall.service.product.entity.BaseAttrInfo;
+import com.example.gmall.service.product.entity.BaseAttrValue;
 import com.example.gmall.service.product.service.BaseAttrInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,4 +32,20 @@ public class BaseAttrController {
         return Result.ok(attrInfos);
     }
 
+    @PostMapping("saveAttrInfo")
+    public Result saveAttrInfo(@RequestBody BaseAttrInfo baseAttrInfo) {
+        if (baseAttrInfo.getId() != null) {
+            baseAttrInfoService.updateAttrInfo(baseAttrInfo);
+        } else {
+            baseAttrInfoService.saveAttrInfo(baseAttrInfo);
+        }
+
+        return Result.ok();
+    }
+
+    @GetMapping("getAttrValueList/{attrId}")
+    public Result getAttrValueList(@PathVariable("attrId") Long attrId) {
+        List<BaseAttrValue> attrValues = baseAttrInfoService.getAttrValueList(attrId);
+        return Result.ok(attrValues);
+    }
 }
