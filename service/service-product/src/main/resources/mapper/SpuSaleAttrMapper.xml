@@ -15,4 +15,29 @@
         id,spu_id,base_sale_attr_id,
         sale_attr_name
     </sql>
+
+    <resultMap id="baseSpuSaleAttrAndValueRM" type="com.example.gmall.service.product.entity.SpuSaleAttr" autoMapping="true">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <!--<result property="spuId" column="spu_id" jdbcType="BIGINT"/>-->
+        <!--<result property="baseSaleAttrId" column="base_sale_attr_id" jdbcType="BIGINT"/>-->
+        <!--<result property="saleAttrName" column="sale_attr_name" jdbcType="VARCHAR"/>-->
+        <collection property="spuSaleAttrValueList" ofType="com.example.gmall.service.product.entity.SpuSaleAttrValue">
+            <id property="id" column="vid" jdbcType="BIGINT"/>
+            <!--<result property="saleAttrValueName" column="sale_attr_value_name" jdbcType="VARCHAR"/>-->
+        </collection>
+    </resultMap>
+
+    <!--
+    resultType="com.example.gmall.service.product.entity.SpuSaleAttr" 不能封装数据库没有的字段
+    @TableField(exist = false)
+    private List<SpuSaleAttrValue> spuSaleAttrValueList;
+    -->
+    <select id="getSpuSaleAttrList" resultMap="baseSpuSaleAttrAndValueRM">
+        select ssa.*,ssav.id vid, ssav.sale_attr_value_name
+        from spu_sale_attr ssa
+                 Left join spu_sale_attr_value ssav
+                           on ssa.spu_id=ssav.spu_id
+                                  and ssa.base_sale_attr_id = ssav.base_sale_attr_id
+        where ssa.spu_id=#{spuId}
+    </select>
 </mapper>

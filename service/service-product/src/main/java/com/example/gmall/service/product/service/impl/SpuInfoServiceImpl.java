@@ -153,7 +153,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoMapper, SpuInfo>
         //4. 存spu_sale_attr_value
         List<SpuSaleAttrValue> spuSaleAttrValues = spuSaveInfoVO.getSpuSaleAttrList()
                 .stream()
-                .flatMap(item -> { //一对多，每个销售属性对应多个销售属性值
+                .flatMap(item -> { //一对多，每个销售属性 对应多个 销售属性值
                     Stream<SpuSaleAttrValue> spuSaleAttrValueStream = item.getSpuSaleAttrValueList()
                             .stream()
                             .map(val -> {
@@ -165,6 +165,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoMapper, SpuInfo>
                             });
                     return spuSaleAttrValueStream;
                 }).collect(Collectors.toList());
+        //在这段代码中，通过使用flatMap操作符将每个销售属性（SpuSaleAttr对象）对应的销售属性值列表item.getSpuSaleAttrValueList()（List<SpuSaleAttrValueListDTO>）
+        //转换为一个流（Stream），然后使用map操作符将每个SpuSaleAttrValueListDTO对象转换为SpuSaleAttrValue对象，并将同一销售属性的所有SpuSaleAttrValue对象转化成Stream<SpuSaleAttrValue>
+        //flatMap会把所有单个Stream<SpuSaleAttrValue>合并成一个单一的流，最终得到的流是Stream<SpuSaleAttrValue>类型的流
+        //这个流是通过将原始的Stream<SpuSaleAttrListDTO>转换而来的，但它不再是原始的流了。
+        //最后，使用collect操作符将流中的所有SpuSaleAttrValue对象收集到一个List集合中
         spuSaleAttrValueService.saveBatch(spuSaleAttrValues);
     }
 }

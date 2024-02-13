@@ -3,6 +3,8 @@ package com.example.gmall.service.product.service;
 import com.example.gmall.service.product.entity.SpuSaleAttr;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
 * @author wangweiyedemacbook
 * @description 针对表【spu_sale_attr(spu销售属性)】的数据库操作Service
@@ -10,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface SpuSaleAttrService extends IService<SpuSaleAttr> {
 
+    List<SpuSaleAttr> getSpuSaleAttrList(Long spuId);
 }
