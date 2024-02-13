@@ -32,7 +32,7 @@ public class BaseTrademarkController {
         return Result.ok(list);
     }
 
-    @ApiOperation("分页获取品牌列表")
+    @ApiOperation("分页获取品 牌列表")
     @GetMapping("/{pn}/{ps}")
     public Result getTrademark(@PathVariable("pn") Long pn,
                                @PathVariable("ps") Long ps){
@@ -49,21 +49,21 @@ public class BaseTrademarkController {
     }
 
     @ApiOperation("删除品牌")
-    @DeleteMapping("/baseTrademark/remove/{id}")
+    @DeleteMapping("/remove/{id}")
     public Result delete(@PathVariable("id") Long id){
         baseTrademarkService.removeById(id);
         return Result.ok();
     }
 
     @ApiOperation("查询品牌")
-    @GetMapping("/baseTrademark/get/{id}")
+    @GetMapping("/get/{id}")
     public Result get(@PathVariable("id") Long id){
         BaseTrademark trademark = baseTrademarkService.getById(id);
         return Result.ok(trademark);
     }
 
     @ApiOperation("修改品牌")
-    @PutMapping("/baseTrademark/update")
+    @PutMapping("/update")
     public Result update(@RequestBody BaseTrademark baseTrademark){
         baseTrademarkService.updateById(baseTrademark);
         return Result.ok();
