@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: web-all
+  cloud:
+    nacos:
+      server-addr: 192.168.241.188:8848
+      config:
+        shared-configs[0].data-id: zipkin.yml #?nacos??zipkin.yml??
