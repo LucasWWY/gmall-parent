@@ -16,6 +16,8 @@ public interface SpuSaleAttrMapper extends BaseMapper<SpuSaleAttr> {
 
     //@Param("spuId")用于指定参数的名称为"spuId"，这样在XML映射文件中可以通过#{spuId}来引用这个参数
     List<SpuSaleAttr> getSpuSaleAttrList(@Param("spuId") Long spuId);
+
+    List<SpuSaleAttr> getSpuSaleAttrListOrder(Long spuId, Long skuId);
 }
 
 

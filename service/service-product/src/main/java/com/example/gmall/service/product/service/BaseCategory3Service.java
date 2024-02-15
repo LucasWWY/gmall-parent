@@ -1,9 +1,7 @@
 package com.example.gmall.service.product.service;
 
-import com.example.gmall.service.product.entity.BaseCategory3;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import com.example.gmall.service.product.entity.BaseCategory3;
 
 /**
 * @author wangweiyedemacbook
@@ -11,6 +9,4 @@ import java.util.List;
 * @createDate 2024-02-06 23:58:52
 */
 public interface BaseCategory3Service extends IService<BaseCategory3> {
-
-    List<BaseCategory3> getCategory3sByCategory2Id(Long category2Id);
 }

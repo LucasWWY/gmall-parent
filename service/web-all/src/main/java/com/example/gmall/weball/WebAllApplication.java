@@ -2,8 +2,10 @@ package com.example.gmall.weball;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringCloudApplication
+@EnableFeignClients
 public class WebAllApplication {
 
     public static void main(String[] args) {

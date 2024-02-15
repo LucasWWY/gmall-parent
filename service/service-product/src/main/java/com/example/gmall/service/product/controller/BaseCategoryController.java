@@ -5,8 +5,6 @@ import com.example.gmall.service.product.entity.BaseCategory1;
 import com.example.gmall.service.product.entity.BaseCategory2;
 import com.example.gmall.service.product.entity.BaseCategory3;
 import com.example.gmall.service.product.service.BaseCategory1Service;
-import com.example.gmall.service.product.service.BaseCategory2Service;
-import com.example.gmall.service.product.service.BaseCategory3Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +29,6 @@ public class BaseCategoryController {
     @Autowired
     BaseCategory1Service baseCategory1Service;
 
-    @Autowired
-    BaseCategory2Service baseCategory2Service;
-
-    @Autowired
-    BaseCategory3Service baseCategory3Service;
-
-
-
     @ApiOperation("获取所有 一级分类")
     @GetMapping("/getCategory1")
     public Result getCategory1(){
@@ -53,7 +43,7 @@ public class BaseCategoryController {
         //queryWrapper.eq("category1_id", category1Id);
         //List<BaseCategory2> category2s = baseCategory2Service.list(queryWrapper);
 
-        List<BaseCategory2> category2s = baseCategory2Service.getCategory2sByCategory1Id(category1Id);
+        List<BaseCategory2> category2s = baseCategory1Service.getCategory2sByCategory1Id(category1Id);
 
         return Result.ok(category2s);
     }
@@ -65,7 +55,7 @@ public class BaseCategoryController {
         //queryWrapper.eq("category1_id", category1Id);
         //List<BaseCategory2> category2s = baseCategory2Service.list(queryWrapper);
 
-        List<BaseCategory3> category3s = baseCategory3Service.getCategory3sByCategory2Id(category2Id);
+        List<BaseCategory3> category3s = baseCategory1Service.getCategory3sByCategory2Id(category2Id);
 
         return Result.ok(category3s);
     }

@@ -18,13 +18,7 @@ import java.util.List;
 public class BaseCategory3ServiceImpl extends ServiceImpl<BaseCategory3Mapper, BaseCategory3>
     implements BaseCategory3Service{
 
-    @Override
-    public List<BaseCategory3> getCategory3sByCategory2Id(Long category2Id) {
-        QueryWrapper<BaseCategory3> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("category2_id", category2Id);
-        List<BaseCategory3> category3s = list(queryWrapper);
-        return category3s;
-    }
+
 }
 
 

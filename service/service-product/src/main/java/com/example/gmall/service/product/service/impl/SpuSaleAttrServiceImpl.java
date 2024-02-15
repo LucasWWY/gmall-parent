@@ -31,6 +31,13 @@ public class SpuSaleAttrServiceImpl extends ServiceImpl<SpuSaleAttrMapper, SpuSa
         List<SpuSaleAttr> spuSaleAttrs = baseMapper.getSpuSaleAttrList(spuId); //MybatisPlus自带方法不够用，自定义sql
         return spuSaleAttrs;
     }
+
+
+    @Override
+    public List<SpuSaleAttr> getSpuSaleAttrListOrder(Long spuId, Long skuId) {
+        List<SpuSaleAttr> spuSaleAttrList = baseMapper.getSpuSaleAttrListOrder(spuId, skuId);
+        return spuSaleAttrList;
+    }
 }
 
 

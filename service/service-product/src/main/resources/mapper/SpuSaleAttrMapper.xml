@@ -4,17 +4,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.gmall.service.product.mapper.SpuSaleAttrMapper">
 
+    <sql id="Base_Column_List">
+        id,spu_id,base_sale_attr_id,
+        sale_attr_name
+    </sql>
+
     <resultMap id="BaseResultMap" type="com.example.gmall.service.product.entity.SpuSaleAttr">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="spuId" column="spu_id" jdbcType="BIGINT"/>
             <result property="baseSaleAttrId" column="base_sale_attr_id" jdbcType="BIGINT"/>
             <result property="saleAttrName" column="sale_attr_name" jdbcType="VARCHAR"/>
     </resultMap>
-
-    <sql id="Base_Column_List">
-        id,spu_id,base_sale_attr_id,
-        sale_attr_name
-    </sql>
 
     <resultMap id="baseSpuSaleAttrAndValueRM" type="com.example.gmall.service.product.entity.SpuSaleAttr" autoMapping="true">
         <id property="id" column="id" jdbcType="BIGINT"/>
@@ -33,11 +33,31 @@
     private List<SpuSaleAttrValue> spuSaleAttrValueList;
     -->
     <select id="getSpuSaleAttrList" resultMap="baseSpuSaleAttrAndValueRM">
-        select ssa.*,ssav.id vid, ssav.sale_attr_value_name
+        select ssa.*,
+               ssav.id vid,
+               ssav.sale_attr_value_name
         from spu_sale_attr ssa
                  Left join spu_sale_attr_value ssav
                            on ssa.spu_id=ssav.spu_id
                                   and ssa.base_sale_attr_id = ssav.base_sale_attr_id
         where ssa.spu_id=#{spuId}
+    </select>
+
+
+    <select id="getSpuSaleAttrListOrder" resultMap="baseSpuSaleAttrAndValueRM">
+        select ssa.*,
+               ssav.id vid,
+               ssav.sale_attr_value_name,
+               if(skusav.sale_attr_value_id is null, '0', '1') is_checked
+        from spu_sale_attr ssa
+            left join spu_sale_attr_value ssav
+                on ssav.spu_id=ssa.spu_id
+                       and ssav.base_sale_attr_id = ssa.base_sale_attr_id
+            left join sku_sale_attr_value skusav
+                on skusav.sku_id=#{skuId}
+                       and skusav.sale_attr_value_id = ssav.id
+        where ssa.spu_id=#{spuId}
+        order by ssa.base_sale_attr_id, ssav.id;
+-- 固定顺序，base_sale_attr_id是另一张表，专门存放sale attr，而每个spu都有sale attr
     </select>
 </mapper>
