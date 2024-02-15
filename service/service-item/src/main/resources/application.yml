@@ -1,0 +1,7 @@
+server:
+  port: 8002
+
+# 继承service父模块的数据库依赖，所以autoconfiguration总是会报错
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

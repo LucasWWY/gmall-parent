@@ -5,10 +5,18 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: product_service # 路由id
+        #后台管理系统，请求url：http://api.gmall.com/admin/product/**
+        - id: product_route # 路由id
           uri: lb://service-product # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
           predicates: # 断言
             - Path=/admin/product/**
+
+        #客户端，请求url：http://gmall.com/ 因为有先后匹配顺序 + 精确匹配，所以要放在后面
+        - id: weball_route
+          uri: lb://web-all # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
+          predicates: # 断言
+            - Host=gmall.com, **.gmall.com #域名匹配
+
       globalcors:
         cors-configurations:
           '[/**]': #所有请求
