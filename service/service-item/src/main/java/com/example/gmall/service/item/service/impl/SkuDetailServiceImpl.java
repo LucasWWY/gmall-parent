@@ -49,8 +49,8 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         List<SpuSaleAttr> spuSaleAttrs = skuDetailFeignClient.getSpuSaleAttr(skuInfo.getSpuId(), skuId).getData();
         skuDetailVO.setSpuSaleAttrList(spuSaleAttrs);
 
-        String data = skuDetailFeignClient.getValuesSkuJson(skuInfo.getId()).getData();
-        skuDetailVO.setValuesSkuJson(data);
+        String jsonString = skuDetailFeignClient.getValuesSkuJson(skuInfo.getSpuId()).getData();
+        skuDetailVO.setValuesSkuJson(jsonString);
 
         return skuDetailVO;
     }

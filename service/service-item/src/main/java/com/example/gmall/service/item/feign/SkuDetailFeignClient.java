@@ -71,10 +71,11 @@ public interface SkuDetailFeignClient {
     Result<List<SpuSaleAttr>> getSpuSaleAttr(@PathVariable("spuId") Long spuId, @PathVariable("skuId") Long skuId);
 
     /**
-     * 6. 获取 valuesSkuJson
-     * @param skuId
+     * 6、获取 valuesSkuJson
+     *
+     * @param spuId
      * @return
      */
-    @GetMapping("/valuesSkuJson/{skuId}")
-    Result<String> getValuesSkuJson(@PathVariable("skuId") Long skuId);
+    @GetMapping("/valuesSkuJson/{spuId}")
+    public Result<String> getValuesSkuJson(@PathVariable("spuId") Long spuId);
 }
