@@ -13,8 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -32,9 +33,16 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     @Autowired //自定义的线程池
     ThreadPoolExecutor coreExecutor;
 
+    //缓存
+    private Map<Long, SkuDetailVO> cache = new ConcurrentHashMap<>();
+
     @Override
     public SkuDetailVO getSkuDetailData(Long skuId) {
-        CountDownLatch countDownLatch = new CountDownLatch(6);
+        return getDataFromRpc(skuId);
+    }
+
+    private SkuDetailVO getDataFromRpc(Long skuId) {
+        //CountDownLatch countDownLatch = new CountDownLatch(6);
 
         SkuDetailVO skuDetailVO = new SkuDetailVO();
 
@@ -48,7 +56,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //所以使用异步，注意：异步前提：自定义的线程池，不要使用默认的线程池
         CompletableFuture<SkuInfo> skuInfoCompletableFuture = CompletableFuture.supplyAsync(() -> {
             SkuInfo skuInfo = skuDetailFeignClient.getSkuInfo(skuId).getData();
-            countDownLatch.countDown();
+            //countDownLatch.countDown();
             return skuInfo;
         }, coreExecutor); //第二个参数是指定线程池，如果不声明，则使用默认的
 
@@ -106,20 +114,20 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //  -> 5
         //  -> 6
         //2，3，4，5，6 可能几乎同时完成，所以不能直接返回，有可能skuDetailVO东西不全，所以要等待所有异步任务完成后再返回
-        
+
         //方法一：
         //try {
         //    countDownLatch.await(); //countDownLatch.countDown(); 6次后，await()才会结束
         //} catch (InterruptedException e) {
         //    throw new RuntimeException(e);
         //}
-        
+
         //方法二：
         CompletableFuture
                 .allOf(valueJsonFuture, spuSaleAttrsFuture, priceFuture, categoryViewFuture, skuImageFuture)
                 .join();
         //异步可能几乎同时完成，如果直接返回，那么有可能skuDetailVO有缺失数据的，所以要等待所有异步任务完成后再返回
-        
+
         return skuDetailVO;
     }
 
