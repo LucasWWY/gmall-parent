@@ -18,5 +18,4 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface SkuDetailFeignClient {
     @GetMapping("/sku/detail/{skuId}")
     Result<SkuDetailVO> getSkuDetails(@PathVariable("skuId") Long skuId);
-
 }

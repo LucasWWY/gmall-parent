@@ -1,0 +1,41 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: master, slave1, slave2
+      master:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.241.188:3306/gmall_product?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: root
+      slave1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.241.188:3307/gmall_product?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: root
+      slave2:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.241.188:3308/gmall_product?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: root
+
+    rules:
+      readwrite-splitting:
+        data-sources:
+          rw-ds: #指定一个读写数据源分离架构的名字, private Map<String, YamlReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
+            static-strategy:
+              write-data-source-name:
+                - master
+              read-data-source-names:
+                - slave1
+                - slave2
+            load-balancer-name: haha #负载均衡算法名字
+        load-balancers:
+          haha:
+            type: ROUND_ROBIN
+
+    props:
+      sql-show: true #log输出sql在主从哪里执行
+

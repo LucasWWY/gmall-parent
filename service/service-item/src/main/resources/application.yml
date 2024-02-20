@@ -5,3 +5,11 @@ server:
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+
+gmall:
+  threadpool:
+    core-pool-size: 8
+    maximum-pool-size: 24
+    keep-alive-time: 5 #单位由线程池的参数TimeUnit unit决定，见MyThreadPoolAutoConfiguration
+    work-queue-size: 3000
