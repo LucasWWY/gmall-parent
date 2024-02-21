@@ -1,5 +1,7 @@
 package com.example.gmall.service.item.service.impl;
 
+import com.alibaba.cloud.commons.lang.StringUtils;
+import com.alibaba.fastjson.JSON;
 import com.example.gmall.service.item.feign.SkuDetailFeignClient;
 import com.example.gmall.service.item.service.SkuDetailService;
 import com.example.gmall.service.product.entity.SkuImage;
@@ -8,7 +10,9 @@ import com.example.gmall.service.product.entity.SpuSaleAttr;
 import com.example.gmall.service.product.vo.CategoryTreeVO;
 import com.example.gmall.service.product.vo.SkuDetailVO;
 import com.example.gmall.service.product.vo.SkuDetailVO.CategoryViewDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lucas (Weiye) Wang
@@ -25,6 +30,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @Description
  */
 @Service
+@Slf4j
 public class SkuDetailServiceImpl implements SkuDetailService {
 
     @Autowired
@@ -33,13 +39,61 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     @Autowired //自定义的线程池
     ThreadPoolExecutor coreExecutor;
 
-    //缓存
-    private Map<Long, SkuDetailVO> cache = new ConcurrentHashMap<>();
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
+    //缓存：
+    //1. 本地缓存：数据存放在微服务所在的jvm内存中
+    private Map<Long, SkuDetailVO> cache = new ConcurrentHashMap<>(); //线程安全的哈希表
+
+    public SkuDetailVO getSkuDetailDataFromLocalCache(Long skuId) {
+
+        //1、先查缓存
+        SkuDetailVO result = cache.get(skuId);
+        //3、缓存没有；回源(i.e. 回到源头)查数据库
+        if (result == null) {
+            log.info("缓存未命中...回源");
+            result = getDataFromRpc(skuId);
+            //4、数据同步到缓存
+            cache.put(skuId, result);
+        }
+
+        return result;
+    }
+
+    /**
+     * 2. 分布式缓存(e.g. Redis)
+     * @param skuId
+     * @return
+     */
     @Override
     public SkuDetailVO getSkuDetailData(Long skuId) {
-        return getDataFromRpc(skuId);
+
+        String jsonString = redisTemplate.opsForValue().get("skuInfo:" + skuId);
+        //1. 缓存未命中
+        if (StringUtils.isEmpty(jsonString)) {
+
+            SkuDetailVO data = getDataFromRpc(skuId);
+            jsonString = "x"; //防止缓存穿透（访问不存在数据），x是让不存在的数据也能存到缓存中
+            //如果数据真存在，同步到缓存
+            if (data != null) {
+                jsonString = JSON.toJSONString(data);
+            }
+            redisTemplate.opsForValue().set("skuInfo:" + skuId, jsonString, 1, TimeUnit.HOURS);
+            return data;
+        }
+
+        //2. 缓存命中：
+        // 2.1 真数据
+        if ("x".equals(jsonString)) {
+            log.info("疑似攻击请求");
+            return null;
+        }
+        // 2.2 假数据：应对缓存穿透，缓存穿透是指访问不存在的数据，导致每次都要访问数据库，这样会对数据库造成压力，所以伪造数据存到缓存中，屏蔽大量访问
+        SkuDetailVO skuDetailVO = JSON.parseObject(jsonString, SkuDetailVO.class);
+        return skuDetailVO;
     }
+
 
     private SkuDetailVO getDataFromRpc(Long skuId) {
         //CountDownLatch countDownLatch = new CountDownLatch(6);
@@ -63,6 +117,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //2. 获取sku的图片信息
         CompletableFuture<Void> skuImageFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> {
             //与上面有先后关系，用thenAccept会复用上一步线程，res代表skuInfoCompletableFuture返回的结果，用thenAcceptAsync（i.e. 新开线程）
+            if (skuInfo == null) return;
             List<SkuImage> skuImageList = skuDetailFeignClient.getSkuImages(skuId).getData();
             skuInfo.setSkuImageList(skuImageList);
             skuDetailVO.setSkuInfo(skuInfo);
@@ -72,6 +127,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
         //3. 当前商品精确完整分类信息
         CompletableFuture<Void> categoryViewFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> { //res代表skuInfoCompletableFuture返回的结果
+            if (skuInfo == null) return;
             CategoryTreeVO categoryTreeVO = skuDetailFeignClient.getCategoryTreeWithC3Id(skuInfo.getCategory3Id()).getData();
             //得到CategoryTreeVO，需要CategoryViewDTO，所以类型要转换一下
             //BeanUtils.copyProperties(categoryTreeVO, categoryViewDTO); //用不了，因为CategoryTreeVO是自嵌套/递归的，需要手动转换
@@ -92,6 +148,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
         //5、销售属性
         CompletableFuture<Void> spuSaleAttrsFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> {
+            if (skuInfo == null) return;
             List<SpuSaleAttr> spuSaleAttrs = skuDetailFeignClient.getSpuSaleAttr(skuInfo.getSpuId(), skuId).getData();
             skuDetailVO.setSpuSaleAttrList(spuSaleAttrs);
 
@@ -100,6 +157,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
         //6、当前sku的所有兄弟们的所有组合可能性。
         CompletableFuture<Void> valueJsonFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> {
+            if (skuInfo == null) return;
             String jsonString = skuDetailFeignClient.getValuesSkuJson(skuInfo.getSpuId()).getData();
             skuDetailVO.setValuesSkuJson(jsonString);
 
