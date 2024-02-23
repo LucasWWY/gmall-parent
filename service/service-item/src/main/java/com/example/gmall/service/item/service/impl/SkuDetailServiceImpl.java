@@ -3,6 +3,7 @@ package com.example.gmall.service.item.service.impl;
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.example.gmall.service.item.feign.SkuDetailFeignClient;
+import com.example.gmall.service.item.service.CacheService;
 import com.example.gmall.service.item.service.SkuDetailService;
 import com.example.gmall.service.product.entity.SkuImage;
 import com.example.gmall.service.product.entity.SkuInfo;
@@ -42,6 +43,9 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     @Autowired
     StringRedisTemplate redisTemplate;
 
+    @Autowired
+    CacheService cacheService;
+
     //缓存：
     //1. 本地缓存：数据存放在微服务所在的jvm内存中
     private Map<Long, SkuDetailVO> cache = new ConcurrentHashMap<>(); //线程安全的哈希表
@@ -61,35 +65,66 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         return result;
     }
 
+    @Override
+    public SkuDetailVO getSkuDetailData(Long skuId) {
+        //1. 先查缓存
+        SkuDetailVO fromCache = cacheService.getFromCache(skuId);
+        //缓存未命中
+        if (fromCache == null) {
+            //2. 判断位图中是否有
+            Boolean contain = cacheService.mightContain(skuId);
+            if (!contain) {
+                log.info("bitmap中没有，疑似攻击请求，直接打回");
+                return null;
+            }
+
+            //3. 商品存在 & 缓存未命中, 回源查数据库
+            log.info("bitmap有，缓存没有，准备回源");
+            SkuDetailVO data = getDataFromRpc(skuId);
+
+            //4. 把数据同步到缓存
+            cacheService.saveData(skuId, data); //为什么saveData中还缓存假数据(i.e."x" 防止缓存穿透)？因为布隆过滤器会误判，有不一定有，没有一定没有
+            //假如布隆过滤器判断有，但实际上没有，那么就需要用假数据在缓存中占位，防止后续的查询缓存穿透
+            return data;
+        } else {
+            //缓存命中
+            return fromCache;
+        }
+
+    }
+
     /**
      * 2. 分布式缓存(e.g. Redis)
      * @param skuId
      * @return
      */
-    @Override
-    public SkuDetailVO getSkuDetailData(Long skuId) {
-
+    public SkuDetailVO getSkuDetailDataNullSave(Long skuId) {
+        //1. 先查缓存
         String jsonString = redisTemplate.opsForValue().get("skuInfo:" + skuId);
-        //1. 缓存未命中
+
+        //2. 缓存未命中, 回源查数据库
         if (StringUtils.isEmpty(jsonString)) {
-
-            SkuDetailVO data = getDataFromRpc(skuId);
-            jsonString = "x"; //防止缓存穿透（访问不存在数据），x是让不存在的数据也能存到缓存中
-            //如果数据真存在，同步到缓存
-            if (data != null) {
-                jsonString = JSON.toJSONString(data);
+            synchronized (this) {
+                //在Java中，每个对象都有一个关联的监视器锁（也称为内置锁或对象锁），使用synchronized关键字时，会获取对象的监视器锁
+                //也就是会获取当前实例的监视器锁，而实例是跟skuId有关的，换句话说，对某特定商品加了锁，其他商品不受影响
+                //但是如果100w请求，每一个请求的skuId都不一样，那么每一个请求都会加锁，这样就没有意义了，仍然会缓存穿透
+                SkuDetailVO data = getDataFromRpc(skuId);
+                jsonString = "x"; //防止缓存穿透（访问不存在数据），x是让不存在的数据也能存到缓存中
+                //3. 把数据同步到缓存，即便是null也缓存，防止缓存穿透
+                if (data != null) {
+                    jsonString = JSON.toJSONString(data);
+                }
+                redisTemplate.opsForValue().set("skuInfo:" + skuId, jsonString, 7, TimeUnit.DAYS);
+                return data;
             }
-            redisTemplate.opsForValue().set("skuInfo:" + skuId, jsonString, 1, TimeUnit.HOURS);
-            return data;
         }
-
-        //2. 缓存命中：
-        // 2.1 真数据
+        //4. 缓存命中：
+        // 4.2 混存假数据：应对缓存穿透，缓存穿透是指访问不存在的数据，导致每次都要访问数据库，这样会对数据库造成压力，所以把不存在数据也存到缓存中，屏蔽大量访问
         if ("x".equals(jsonString)) {
             log.info("疑似攻击请求");
             return null;
         }
-        // 2.2 假数据：应对缓存穿透，缓存穿透是指访问不存在的数据，导致每次都要访问数据库，这样会对数据库造成压力，所以伪造数据存到缓存中，屏蔽大量访问
+        // 4.1 真数据
         SkuDetailVO skuDetailVO = JSON.parseObject(jsonString, SkuDetailVO.class);
         return skuDetailVO;
     }

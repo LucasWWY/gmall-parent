@@ -5,9 +5,11 @@ server:
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-  redis:
-    host: 192.168.241.188
-    port: 6379
+
+# redis已经抽取到nacos上了
+#  redis:
+#    host: 192.168.241.188
+#    port: 6379
 #    password:
 
 

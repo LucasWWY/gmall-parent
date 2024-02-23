@@ -1,6 +1,7 @@
 package com.example.gmall.service.product.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.gmall.common.constant.RedisConst;
 import com.example.gmall.service.product.entity.SkuAttrValue;
 import com.example.gmall.service.product.entity.SkuImage;
 import com.example.gmall.service.product.entity.SkuInfo;
@@ -14,6 +15,7 @@ import com.example.gmall.service.product.vo.SkuSaveInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +39,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoMapper, SkuInfo>
 
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     @Override
     public void saveSkuInfoData(SkuSaveInfoVO skuSaveInfoVO) {
@@ -81,6 +86,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoMapper, SkuInfo>
                     return skuSaleAttrValue;
                 }).collect(Collectors.toList());
         skuSaleAttrValueService.saveBatch(skuSaleAttrValues);
+
+        //每录入一个商品，都要同步bitmap
+        redisTemplate.opsForValue().setBit(RedisConst.SKUID_BITMAP, skuId, true);
     }
 }
 
