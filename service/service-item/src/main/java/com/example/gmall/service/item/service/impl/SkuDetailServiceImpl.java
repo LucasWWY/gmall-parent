@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Lucas (Weiye) Wang
@@ -45,6 +46,9 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
     @Autowired
     CacheService cacheService;
+
+    ReentrantLock reentrantLock = new ReentrantLock(); //底层是AQS(AbstractQueuedSynchronizer) lock()底层是compareAndSetState() -> compareAndSwap() i.e. CAS
+    //spring bean默认单例，实例中只有一把锁，所有线程都在竞争这一把锁，如果放在方法内部，每次调用方法时都会创建一个新的锁对象实例，意味着每个线程都会获得自己的锁对象
 
     //缓存：
     //1. 本地缓存：数据存放在微服务所在的jvm内存中
@@ -79,13 +83,32 @@ public class SkuDetailServiceImpl implements SkuDetailService {
             }
 
             //3. 商品存在 & 缓存未命中, 回源查数据库
-            log.info("bitmap有，缓存没有，准备回源");
-            SkuDetailVO data = getDataFromRpc(skuId);
+            log.info("bitmap有，缓存没有，准备回源，正在抢锁...");
+            //4. 拦截缓存击穿：抢锁
+            //为什么在这拦？因为缓存击穿就是指热点数据失效后，大量请求会直接打到数据库，造成数据库压力大
+            //而这正是高并发 请求数据库的地方
+            boolean tryLock = reentrantLock.tryLock();//允许同一线程获得同一把锁
+            if (tryLock) {
+                //加锁成功（防止缓存击穿，就是只让一个人去查数据库并同步到缓存，其他人直接去缓存获取数据）
+                log.info("加锁成功，正在回源...");
+                SkuDetailVO data = getDataFromRpc(skuId);
+                //5. 把数据同步到缓存
+                cacheService.saveData(skuId, data); //为什么saveData中还缓存假数据(i.e."x" 防止缓存穿透)？因为布隆过滤器会误判，有不一定有，没有一定没有
+                //假如布隆过滤器判断有，但实际上没有，那么就需要用假数据在缓存中占位，防止后续的查询缓存穿透
 
-            //4. 把数据同步到缓存
-            cacheService.saveData(skuId, data); //为什么saveData中还缓存假数据(i.e."x" 防止缓存穿透)？因为布隆过滤器会误判，有不一定有，没有一定没有
-            //假如布隆过滤器判断有，但实际上没有，那么就需要用假数据在缓存中占位，防止后续的查询缓存穿透
-            return data;
+                //6. 解锁
+                reentrantLock.unlock();
+                return data;
+            } else {
+                //加锁失败，直接睡眠然后去缓存获取数据（防止缓存击穿，就是只让一个人去查数据库并同步到缓存，其他人直接去缓存获取数据）
+                log.info("加锁失败，正在睡眠，等待缓存同步结束去缓存查...");
+                try {
+                    TimeUnit.MILLISECONDS.sleep(500);
+                    return cacheService.getFromCache(skuId);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         } else {
             //缓存命中
             return fromCache;

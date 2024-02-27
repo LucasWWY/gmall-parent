@@ -32,7 +32,7 @@ public class CacheServiceImpl implements CacheService {
         if (StringUtils.isEmpty(jsonString)) {
             return null;
         } else if ("x".equals(jsonString)) {
-            return new SkuDetailVO();
+            return new SkuDetailVO(); //应对缓存穿透的假数据
         } else {
             //2. 缓存有
             SkuDetailVO skuDetailVO = JSON.parseObject(jsonString, SkuDetailVO.class);

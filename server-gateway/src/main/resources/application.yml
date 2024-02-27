@@ -6,6 +6,10 @@ spring:
     gateway:
       routes:
         #后台管理系统，请求url：http://api.gmall.com/admin/product/**
+        - id: item_route
+          uri: lb://service-item # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
+          predicates:
+            - Path=/admin/item/**
         - id: product_route # 路由id
           uri: lb://service-product # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
           predicates: # 断言
