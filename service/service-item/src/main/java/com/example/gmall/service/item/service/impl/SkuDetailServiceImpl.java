@@ -2,6 +2,7 @@ package com.example.gmall.service.item.service.impl;
 
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.example.gmall.common.constant.RedisConst;
 import com.example.gmall.service.item.feign.SkuDetailFeignClient;
 import com.example.gmall.service.item.service.CacheService;
 import com.example.gmall.service.item.service.SkuDetailService;
@@ -12,6 +13,8 @@ import com.example.gmall.service.product.vo.CategoryTreeVO;
 import com.example.gmall.service.product.vo.SkuDetailVO;
 import com.example.gmall.service.product.vo.SkuDetailVO.CategoryViewDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -47,30 +50,61 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     @Autowired
     CacheService cacheService;
 
-    ReentrantLock reentrantLock = new ReentrantLock(); //底层是AQS(AbstractQueuedSynchronizer) lock()底层是compareAndSetState() -> compareAndSwap() i.e. CAS
-    //spring bean默认单例，实例中只有一把锁，所有线程都在竞争这一把锁，如果放在方法内部，每次调用方法时都会创建一个新的锁对象实例，意味着每个线程都会获得自己的锁对象
+    @Autowired
+    RedissonClient redissonClient;
 
-    //缓存：
-    //1. 本地缓存：数据存放在微服务所在的jvm内存中
-    private Map<Long, SkuDetailVO> cache = new ConcurrentHashMap<>(); //线程安全的哈希表
-
-    public SkuDetailVO getSkuDetailDataFromLocalCache(Long skuId) {
-
-        //1、先查缓存
-        SkuDetailVO result = cache.get(skuId);
-        //3、缓存没有；回源(i.e. 回到源头)查数据库
-        if (result == null) {
-            log.info("缓存未命中...回源");
-            result = getDataFromRpc(skuId);
-            //4、数据同步到缓存
-            cache.put(skuId, result);
-        }
-
-        return result;
-    }
-
+    //2. Redisson分布式锁
     @Override
     public SkuDetailVO getSkuDetailData(Long skuId) {
+
+        //1. 先查缓存
+        SkuDetailVO cache = cacheService.getFromCache(skuId);
+        if (cache != null) {
+            //2. 缓存命中
+            return cache;
+        }
+
+        //3. 缓存未命中，回源查数据库
+        //4. 先问bitmap，有没有这个skuId 【布隆过滤器：防止随机值穿透攻击】
+        Boolean mightContain = cacheService.mightContain(skuId);
+        if (!mightContain) {
+            log.info("bitmap中没有，疑似攻击请求，直接打回");
+            return null;
+        }
+        //5. bitmap有，缓存没有，准备回源，分布式集群正在抢锁... 【防止缓存击穿】
+        RLock lock = redissonClient.getLock(RedisConst.SKU_LOCK + skuId);
+        //lock.lock(); //不能使用阻塞式锁，因为每个线程一定要抢到
+        boolean tryLock = lock.tryLock(); //尝试加锁，只尝试一次，成功返回true，失败返回false，允许自动续期
+        try {
+            if (tryLock) {
+                //6. 加锁成功 回源
+                log.info("加锁成功，正在回源...");
+                SkuDetailVO data = getDataFromRpc(skuId);
+                //7. 把数据同步到缓存
+                cacheService.saveData(skuId, data);
+                //8. 解锁
+                lock.unlock();
+                return data;
+            } else {
+                //6. 加锁失败，直接睡眠然后去缓存获取数据
+                log.info("加锁失败，正在睡眠，等待缓存同步结束去缓存查...");
+                TimeUnit.MILLISECONDS.sleep(500);
+                return cacheService.getFromCache(skuId);
+            }
+        } catch (Exception e) {
+
+        } finally {
+
+        }
+
+    }
+
+    ReentrantLock reentrantLock = new ReentrantLock(); //底层是AQS(AbstractQueuedSynchronizer) lock()底层是compareAndSetState() -> compareAndSwap() i.e. CAS
+    //spring bean默认单例，实例中只有一把锁，所有线程都在竞争这一把锁，如果放在方法内部，每次调用方法时都会创建一个新的锁对象实例，意味着每个线程都会获得自己的锁对象
+    //JUC本地锁，在分布式场景下，锁不住所有机器
+
+    //1. 本地锁
+    public SkuDetailVO getSkuDetailDataWithLocalLock(Long skuId) {
         //1. 先查缓存
         SkuDetailVO fromCache = cacheService.getFromCache(skuId);
         //缓存未命中
@@ -113,7 +147,25 @@ public class SkuDetailServiceImpl implements SkuDetailService {
             //缓存命中
             return fromCache;
         }
+    }
 
+
+    //缓存：
+    //1. 本地缓存：数据存放在微服务所在的jvm内存中
+    private Map<Long, SkuDetailVO> cache = new ConcurrentHashMap<>(); //线程安全的哈希表
+    public SkuDetailVO getSkuDetailDataFromLocalCache(Long skuId) {
+
+        //1、先查缓存
+        SkuDetailVO result = cache.get(skuId);
+        //3、缓存没有；回源(i.e. 回到源头)查数据库
+        if (result == null) {
+            log.info("缓存未命中...回源");
+            result = getDataFromRpc(skuId);
+            //4、数据同步到缓存
+            cache.put(skuId, result);
+        }
+
+        return result;
     }
 
     /**
