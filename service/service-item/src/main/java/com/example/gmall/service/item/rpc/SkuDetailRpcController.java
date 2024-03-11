@@ -24,7 +24,7 @@ public class SkuDetailRpcController {
 
     @GetMapping("/sku/detail/{skuId}")
     public Result<SkuDetailVO> getSkuDetails(@PathVariable("skuId") Long skuId){
-
+        //切面拦截
         SkuDetailVO sKuDetailVO = skuDetailService.getSkuDetailData(skuId);
 
         return Result.ok(sKuDetailVO);

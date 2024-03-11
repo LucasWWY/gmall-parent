@@ -53,9 +53,15 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     @Autowired
     RedissonClient redissonClient;
 
-    //2. Redisson分布式锁
+    //5. 使用AOP切面拦截 Redisson分布式锁 + 分布式缓存Redis 各种东西全部放到切面中
+    //业务只关注业务逻辑怎么实现，增强逻辑由切面实现
     @Override
     public SkuDetailVO getSkuDetailData(Long skuId) {
+        return getDataFromRpc(skuId);
+    }
+
+    //4. Redisson分布式锁
+    public SkuDetailVO getSkuDetailDataWithDistLock(Long skuId) {
 
         //1. 先查缓存
         SkuDetailVO cache = cacheService.getFromCache(skuId);
@@ -71,9 +77,9 @@ public class SkuDetailServiceImpl implements SkuDetailService {
             log.info("bitmap中没有，疑似攻击请求，直接打回");
             return null;
         }
-        //5. bitmap有，缓存没有，准备回源，分布式集群正在抢锁... 【防止缓存击穿】
+        //5. bitmap有，缓存没有，准备回源，分布式集群正在抢锁...【防止缓存击穿】
         RLock lock = redissonClient.getLock(RedisConst.SKU_LOCK + skuId);
-        //lock.lock(); //不能使用阻塞式锁，因为每个线程一定要抢到
+        //lock.lock(); //不能使用阻塞式锁，不然每个线程一定要抢到
         boolean tryLock = lock.tryLock(); //尝试加锁，只尝试一次，成功返回true，失败返回false，允许自动续期
         try {
             if (tryLock) {
@@ -92,18 +98,15 @@ public class SkuDetailServiceImpl implements SkuDetailService {
                 return cacheService.getFromCache(skuId);
             }
         } catch (Exception e) {
-
-        } finally {
-
+            return null;
         }
-
     }
 
     ReentrantLock reentrantLock = new ReentrantLock(); //底层是AQS(AbstractQueuedSynchronizer) lock()底层是compareAndSetState() -> compareAndSwap() i.e. CAS
     //spring bean默认单例，实例中只有一把锁，所有线程都在竞争这一把锁，如果放在方法内部，每次调用方法时都会创建一个新的锁对象实例，意味着每个线程都会获得自己的锁对象
     //JUC本地锁，在分布式场景下，锁不住所有机器
 
-    //1. 本地锁
+    //3. 本地锁
     public SkuDetailVO getSkuDetailDataWithLocalLock(Long skuId) {
         //1. 先查缓存
         SkuDetailVO fromCache = cacheService.getFromCache(skuId);
