@@ -3,6 +3,7 @@ package com.example.gmall.service.item.service.impl;
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.example.gmall.common.constant.RedisConst;
+import com.example.gmall.service.item.aspect.annotation.MallCache;
 import com.example.gmall.service.item.feign.SkuDetailFeignClient;
 import com.example.gmall.service.item.service.CacheService;
 import com.example.gmall.service.item.service.SkuDetailService;
@@ -55,6 +56,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
     //5. 使用AOP切面拦截 Redisson分布式锁 + 分布式缓存Redis 各种东西全部放到切面中
     //业务只关注业务逻辑怎么实现，增强逻辑由切面实现
+    @MallCache
     @Override
     public SkuDetailVO getSkuDetailData(Long skuId) {
         return getDataFromRpc(skuId);

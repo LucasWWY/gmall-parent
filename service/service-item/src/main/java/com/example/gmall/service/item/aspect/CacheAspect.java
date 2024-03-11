@@ -16,16 +16,17 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CacheAspect {
 
+    //v1.0
     //最模糊：@Before("execution(public * *.*(..))")
     //最完整：@Before("execution(public * com.example.gmall.service.item.service.SkuDetailService.getSkuDetailData(java.lang.Long))")
     //*：非参数位置，匹配任意
     //..：任意参数
     //public void cut(){};
 
-
+    //v2.0
     //可以复用的切入点表达式
-    @Pointcut("execution(public * com.example.gmall.service.item.service.SkuDetailService.getSkuDetailData(..))")
-    public void pc(){};
+    //@Pointcut("execution(public * com.example.gmall.service.item.service.SkuDetailService.getSkuDetailData(..))")
+    //public void pc(){};
 
     //@Before(value = "pc()") //直接复用切入点表达式
     //public void cut(){};
@@ -43,6 +44,11 @@ public class CacheAspect {
     ////@AfterThrowing(value = "pc()")
     //@AfterThrowing(value = "pc()", throwing = "e")
     //public void exceptionCut(Throwable e){}
+
+    //v3.0 声明式注解
+    //@Pointcut("execution(public * com.example.gmall.service.item.service.SkuDetailService.getSkuDetailData(..))")
+    @Pointcut("@annotation(com.example.gmall.service.item.aspect.annotation.MallCache)") //凡事被@MallCache注解的方法都是切入点
+    public void pc(){};
 
 
     //用环绕通知拦截目标方法的执行
