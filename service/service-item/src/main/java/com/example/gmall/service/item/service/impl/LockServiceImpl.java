@@ -1,4 +1,4 @@
-package com.example.gmall.service.item.service.impl.impl;
+package com.example.gmall.service.item.service.impl;
 
 import com.example.gmall.service.item.service.LockService;
 import org.springframework.beans.factory.annotation.Autowired;

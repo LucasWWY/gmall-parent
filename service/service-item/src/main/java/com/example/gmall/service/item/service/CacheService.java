@@ -14,7 +14,7 @@ public interface CacheService {
 
     Boolean mightContain(Long skuId);
 
-    void saveData(Long skuId, SkuDetailVO skuDetailVO);
+    void saveData(Long skuId, Object retVal);
 
 
 }

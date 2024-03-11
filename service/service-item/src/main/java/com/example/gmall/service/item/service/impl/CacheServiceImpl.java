@@ -46,13 +46,13 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
-    public void saveData(Long skuId, SkuDetailVO skuDetailVO) {
+    public void saveData(Long skuId, Object retVal) {
         String jsonString = "x"; //默认假数据
 
-        if (skuDetailVO.getSkuInfo() != null) {
-            jsonString = JSON.toJSONString(skuDetailVO);
+        if (retVal != null) {
+            jsonString = JSON.toJSONString(retVal);
         }
 
-        redisTemplate.opsForValue().set(RedisConst.SKU_DETAIL_CACHE + skuId, JSON.toJSONString(skuDetailVO), 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConst.SKU_DETAIL_CACHE + skuId, JSON.toJSONString(retVal), 7, TimeUnit.DAYS);
     }
 }
