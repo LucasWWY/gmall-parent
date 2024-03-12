@@ -1,18 +1,11 @@
 package com.example.gmall.service.item.aspect;
 
-import com.example.gmall.common.constant.RedisConst;
+import com.example.gmall.service.item.aspect.annotation.MallCache;
 import com.example.gmall.service.item.service.CacheService;
-import com.example.gmall.service.product.vo.SkuDetailVO;
-import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -88,7 +81,14 @@ public class CacheAspect {
 
             //TODO 1. 先动态地查缓存, 查各种数据用的key都不一样
             //1. 先查缓存
-            SkuDetailVO fromCache = cacheService.getFromCache(skuId);
+            Type returnType = getMethodReturnType(pjp);
+            //SkuDetailVO fromCache = cacheService.getFromCache(skuId); //getFromCache()针对skuDetailVO写死的
+            //Object fromCache = cacheService.getCacheData(RedisConst.SKU_DETAIL_CACHE + skuId, returnType); //查缓存通用，但key写死了，我可以在@MallCache中添加key参数
+
+            MallCache mallCache = getMethodAnnotation(pjp, MallCache.class);
+            String key = mallCache.key();
+            Object fromCache = cacheService.getCacheData(key + skuId, returnType); //通用的
+
             if (fromCache == null) {
                 //2. 缓存命中
                 return fromCache;
@@ -144,5 +144,25 @@ public class CacheAspect {
                 lock.unlock();
             }
         }
+    }
+
+    /**
+     * 获取方法上的指定注解
+     * @param pjp
+     * @param clzz
+     * @return
+     * @param <T>
+     */
+    private <T extends Annotation> T getMethodAnnotation(ProceedingJoinPoint pjp, Class<T> clzz) { //<T>用于声明一个泛型类型参数
+        MethodSignature signature = (MethodSignature) pjp.getSignature();
+        Method method = signature.getMethod();
+        T annotation = method.getDeclaredAnnotation(clzz);
+        return annotation;
+    }
+
+    private Type getMethodReturnType(ProceedingJoinPoint pjp) {
+        MethodSignature signature = (MethodSignature) pjp.getSignature();
+        Type returnType = signature.getMethod().getGenericReturnType();
+        return returnType;
     }
 }

@@ -39,6 +39,7 @@ public class SpuSaleAttrServiceImpl extends ServiceImpl<SpuSaleAttrMapper, SpuSa
     }
 
 
+    @MallCache
     @Override
     public List<SpuSaleAttr> getSpuSaleAttrListOrder(Long spuId, Long skuId) {
         List<SpuSaleAttr> spuSaleAttrList = baseMapper.getSpuSaleAttrListOrder(spuId, skuId);

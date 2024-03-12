@@ -12,6 +12,7 @@ import com.example.gmall.service.product.service.BaseCategory3Service;
 import com.example.gmall.service.product.vo.CategoryTreeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.gmall.service.item.aspect.annotation.MallCache;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class BaseCategory1ServiceImpl extends ServiceImpl<BaseCategory1Mapper, B
     BaseCategory3Service baseCategory3Service;
 
 
+    @MallCache
     @Override
     public List<CategoryTreeVO> getCategoryTree() {
         //select bc1.*, bc2.*, bc3.* from base_category1 bc1

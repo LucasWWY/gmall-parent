@@ -2,6 +2,8 @@ package com.example.gmall.service.item.service;
 
 import com.example.gmall.service.product.vo.SkuDetailVO;
 
+import java.lang.reflect.Type;
+
 /**
  * @author Lucas (Weiye) Wang
  * @version 1.0.0
@@ -16,5 +18,5 @@ public interface CacheService {
 
     void saveData(Long skuId, Object retVal);
 
-
+    Object getCacheData(String key, Type returnType);
 }

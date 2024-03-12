@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,6 +42,23 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
+    public Object getCacheData(String key, Type returnType) {
+        //1. 查询缓存
+        String jsonString = redisTemplate.opsForValue().get(key);
+
+        //缓存没有
+        if (StringUtils.isEmpty(jsonString)) {
+            return null;
+        } else if ("x".equals(jsonString)) {
+            return new Object(); //应对缓存穿透的假数据，占个位
+        } else {
+            //2. 缓存有
+            SkuDetailVO skuDetailVO = JSON.parseObject(jsonString, returnType);
+            return skuDetailVO;
+        }
+    }
+
+    @Override
     public Boolean mightContain(Long skuId) {
         return redisTemplate.opsForValue().getBit(RedisConst.SKU_DETAIL_CACHE, skuId);
     }
@@ -55,4 +73,6 @@ public class CacheServiceImpl implements CacheService {
 
         redisTemplate.opsForValue().set(RedisConst.SKU_DETAIL_CACHE + skuId, JSON.toJSONString(retVal), 7, TimeUnit.DAYS);
     }
+
+
 }
