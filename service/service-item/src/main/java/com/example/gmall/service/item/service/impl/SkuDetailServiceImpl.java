@@ -56,7 +56,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
     //5. 使用AOP切面拦截 Redisson分布式锁 + 分布式缓存Redis 各种东西全部放到切面中
     //业务只关注业务逻辑怎么实现，增强逻辑由切面实现
-    @MallCache
+    @MallCache(key = RedisConst.SKU_DETAIL_CACHE)
     @Override
     public SkuDetailVO getSkuDetailData(Long skuId) {
         return getDataFromRpc(skuId);

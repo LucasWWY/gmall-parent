@@ -14,6 +14,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface MallCache {
 
-
+    String key() default "";
 
 }
