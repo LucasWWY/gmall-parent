@@ -53,14 +53,18 @@ public class CacheServiceImpl implements CacheService {
             return new Object(); //应对缓存穿透的假数据，占个位
         } else {
             //2. 缓存有
-            SkuDetailVO skuDetailVO = JSON.parseObject(jsonString, returnType);
-            return skuDetailVO;
+            return JSON.parseObject(jsonString, returnType);
         }
     }
 
     @Override
     public Boolean mightContain(Long skuId) {
         return redisTemplate.opsForValue().getBit(RedisConst.SKU_DETAIL_CACHE, skuId);
+    }
+
+    @Override
+    public Boolean mightContain(String bitMapName, Long bitMapIndex) {
+        return redisTemplate.opsForValue().getBit(bitMapName, bitMapIndex);
     }
 
     @Override
@@ -71,7 +75,18 @@ public class CacheServiceImpl implements CacheService {
             jsonString = JSON.toJSONString(retVal);
         }
 
-        redisTemplate.opsForValue().set(RedisConst.SKU_DETAIL_CACHE + skuId, JSON.toJSONString(retVal), 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConst.SKU_DETAIL_CACHE + skuId, jsonString, 7, TimeUnit.DAYS);
+    }
+
+    @Override
+    public void saveCacheData(String cacheKey, Object retVal, long ttl, TimeUnit unit) {
+        String jsonString = "x"; //默认假数据
+
+        if (retVal != null) {
+            jsonString = JSON.toJSONString(retVal);
+        }
+
+        redisTemplate.opsForValue().set(cacheKey, jsonString, ttl, unit);
     }
 
 

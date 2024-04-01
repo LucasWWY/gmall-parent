@@ -1,6 +1,7 @@
 package com.example.gmall.service.item.aspect.annotation;
 
 import java.lang.annotation.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lucas (Weiye) Wang
@@ -14,6 +15,28 @@ import java.lang.annotation.*;
 @Documented
 public @interface MallCache {
 
-    String key() default "";
+    /**
+     * 不同业务，缓存key不同
+     * @return
+     */
+    String cacheKey() default "";
 
+    /**
+     * 不同业务，位图不同
+     * 默认值代表不使用位图
+     * @return
+     */
+    String bitMapName() default "";
+
+    /**
+     * bitMap的key
+     * @return
+     */
+    String bitMapIndex() default "";
+
+    String lockKey() default "";
+
+    long ttl() default 30;
+
+    TimeUnit unit() default TimeUnit.SECONDS;
 }
