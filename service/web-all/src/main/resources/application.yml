@@ -9,3 +9,5 @@ spring:
     cache: false
     prefix: classpath:/templates/
     suffix: .html
+  main:
+    allow-bean-definition-overriding: true #允许bean的覆盖: feign-clients/product/两个feign client配置集中在一个重名的bean中：service-product.FeignClientSpecification

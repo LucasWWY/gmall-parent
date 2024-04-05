@@ -3,6 +3,8 @@ server:
 
 # 继承service父模块的数据库依赖，所以autoconfiguration总是会报错
 spring:
+  main:
+    allow-bean-definition-overriding: true #允许bean的覆盖: feign-clients/product/两个feign client配置集中在一个重名的bean中：service-product.FeignClientSpecification
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
@@ -19,3 +21,18 @@ gmall:
     maximum-pool-size: 24
     keep-alive-time: 5 #单位由线程池的参数TimeUnit unit决定，见MyThreadPoolAutoConfiguration
     work-queue-size: 3000
+
+feign:
+  client:
+    default-config: default
+    config:
+      default:
+        connect-timeout: 1000
+        read-timeout: 4000
+        retryer: com.example.gmall.service.item.retryer.Retryer3
+
+#      service-product:
+#        connect-timeout: 1000
+#        read-timeout: 4000
+
+

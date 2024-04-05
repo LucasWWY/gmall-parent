@@ -12,9 +12,7 @@ public enum ResultCodeEnum {
     SUCCESS(200,"成功"),
     FAIL(201, "失败"),
     SERVICE_ERROR(2012, "服务异常"),
-
     PAY_RUN(205, "支付中"),
-
     LOGIN_AUTH(208, "未登陆"),
     PERMISSION(209, "没有权限"),
     SECKILL_NO_START(210, "秒杀还没开始"),
@@ -27,8 +25,7 @@ public enum ResultCodeEnum {
     SECKILL_ILLEGAL(217, "请求不合法"),
     SECKILL_ORDER_SUCCESS(218, "下单成功"),
     COUPON_GET(220, "优惠券已经领取"),
-    COUPON_LIMIT_GET(221, "优惠券已发放完毕"),
-    ;
+    COUPON_LIMIT_GET(221, "优惠券已发放完毕");
 
     private Integer code;
 

@@ -27,6 +27,14 @@
             <artifactId>service-util</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <!--抽取feign client调用到common下-->
+        <dependency>
+            <groupId>com.example.gmall</groupId>
+            <artifactId>feign-clients</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <dependency>
             <groupId>com.example.gmall</groupId>
             <artifactId>model</artifactId>
