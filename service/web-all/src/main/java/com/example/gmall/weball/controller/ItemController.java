@@ -1,14 +1,17 @@
 package com.example.gmall.weball.controller;
 
 import com.example.gmall.common.result.Result;
+import com.example.gmall.feign.item.ItemSkuDetailFeignClient;
+import com.example.gmall.feign.product.ProductSkuDetailFeignClient;
 import com.example.gmall.service.product.vo.SkuDetailVO;
-import com.example.gmall.weball.feign.SkuDetailFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.math.BigDecimal;
 
 /**
  * @author Lucas (Weiye) Wang
@@ -21,10 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ItemController {
 
     @Autowired
-    SkuDetailFeignClient skuDetailFeignClient;
+    ItemSkuDetailFeignClient itemSkuDetailFeignClient;
 
-    //@Autowired
-    //ProductSkuDetailFeignClient productSkuDetailFeignClient;
+    @Autowired
+    ProductSkuDetailFeignClient productSkuDetailFeignClient;
 
     /**
      * 商品详情页
@@ -35,7 +38,7 @@ public class ItemController {
     public String itemPage(@PathVariable("skuId") Long skuId, Model model){
 
         //远程调用查询详情数据
-        Result<SkuDetailVO> skuDetails = skuDetailFeignClient.getSkuDetails(skuId);
+        Result<SkuDetailVO> skuDetails = itemSkuDetailFeignClient.getSkuDetails(skuId);
         SkuDetailVO skuDetailVO = skuDetails.getData();
 
         //1、分类视图 {category1Id、category2Id、category3Id、category1Name、category2Name、category3Name}
@@ -47,8 +50,8 @@ public class ItemController {
         //3、实时价格
         //BigDecimal bigDecimal = productSkuDetailFeignClient.getPrice(skuId).getData();
         //model.addAttribute("price",bigDecimal);
-        model.addAttribute("price",skuDetailVO.getPrice());
-
+        BigDecimal price = productSkuDetailFeignClient.getPrice(skuId).getData(); //不用担心缓存
+        model.addAttribute("price",price);
 
         //4、所有销售属性集合
         model.addAttribute("spuSaleAttrList",skuDetailVO.getSpuSaleAttrList());

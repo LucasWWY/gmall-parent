@@ -1,8 +1,8 @@
 package com.example.gmall.weball.controller;
 
 import com.example.gmall.common.result.Result;
+import com.example.gmall.feign.product.CategoryFeignClient;
 import com.example.gmall.service.product.vo.CategoryTreeVO;
-import com.example.gmall.weball.feign.CategoryFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

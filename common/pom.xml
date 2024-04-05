@@ -6,6 +6,9 @@
         <artifactId>gmall-parent</artifactId>
         <version>1.0</version>
     </parent>
+    <modules>
+        <module>feign-clients</module>
+    </modules>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example.gmall</groupId>

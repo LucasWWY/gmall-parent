@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RequestMapping("/api/inner/rpc/product")
 @FeignClient("service-product ")
-public interface SkuDetailFeignClient {
+public interface ProductSkuDetailFeignClient {
 
     /**
      * 给sku详情(web-all -> service-item -> service-product)使用的，每个sku必有三级分类

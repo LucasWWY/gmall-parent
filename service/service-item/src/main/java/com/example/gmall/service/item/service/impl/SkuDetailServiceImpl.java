@@ -2,7 +2,7 @@ package com.example.gmall.service.item.service.impl;
 
 
 import com.example.gmall.common.constant.RedisConst;
-import com.example.gmall.feign.product.SkuDetailFeignClient;
+import com.example.gmall.feign.product.ProductSkuDetailFeignClient;
 import com.example.gmall.service.item.service.SkuDetailService;
 import com.example.gmall.service.product.entity.SkuImage;
 import com.example.gmall.service.product.entity.SkuInfo;
@@ -37,7 +37,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SkuDetailServiceImpl implements SkuDetailService {
 
     @Autowired
-    SkuDetailFeignClient skuDetailFeignClient;
+    ProductSkuDetailFeignClient productSkuDetailFeignClient;
 
     @Autowired //自定义的线程池
     ThreadPoolExecutor coreExecutor;
@@ -227,7 +227,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //这些rpc基本没有先后顺序，获取详情页的数据合并成最终的skuDetailVO
         //所以使用异步，注意：异步前提：自定义的线程池，不要使用默认的线程池
         CompletableFuture<SkuInfo> skuInfoCompletableFuture = CompletableFuture.supplyAsync(() -> {
-            SkuInfo skuInfo = skuDetailFeignClient.getSkuInfo(skuId).getData();
+            SkuInfo skuInfo = productSkuDetailFeignClient.getSkuInfo(skuId).getData();
             //countDownLatch.countDown();
             return skuInfo;
         }, coreExecutor); //第二个参数是指定线程池，如果不声明，则使用默认的
@@ -236,7 +236,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         CompletableFuture<Void> skuImageFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> {
             //与上面有先后关系，用thenAccept会复用上一步线程，res代表skuInfoCompletableFuture返回的结果，用thenAcceptAsync（i.e. 新开线程）
             if (skuInfo == null) return;
-            List<SkuImage> skuImageList = skuDetailFeignClient.getSkuImages(skuId).getData();
+            List<SkuImage> skuImageList = productSkuDetailFeignClient.getSkuImages(skuId).getData();
             skuInfo.setSkuImageList(skuImageList);
             skuDetailVO.setSkuInfo(skuInfo);
 
@@ -246,7 +246,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //3. 当前商品精确完整分类信息
         CompletableFuture<Void> categoryViewFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> { //res代表skuInfoCompletableFuture返回的结果
             if (skuInfo == null) return;
-            CategoryTreeVO categoryTreeVO = skuDetailFeignClient.getCategoryTreeWithC3Id(skuInfo.getCategory3Id()).getData();
+            CategoryTreeVO categoryTreeVO = productSkuDetailFeignClient.getCategoryTreeWithC3Id(skuInfo.getCategory3Id()).getData();
             //得到CategoryTreeVO，需要CategoryViewDTO，所以类型要转换一下
             //BeanUtils.copyProperties(categoryTreeVO, categoryViewDTO); //用不了，因为CategoryTreeVO是自嵌套/递归的，需要手动转换
             CategoryViewDTO categoryViewDTO = convertToCategoryViewDTO(categoryTreeVO);
@@ -258,7 +258,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
         //4. 获取sku的价格
         CompletableFuture<Void> priceFuture = CompletableFuture.runAsync(() -> {
-            BigDecimal price = skuDetailFeignClient.getPrice(skuId).getData();
+            BigDecimal price = productSkuDetailFeignClient.getPrice(skuId).getData();
             skuDetailVO.setPrice(price);
 
             //countDownLatch.countDown();
@@ -267,7 +267,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //5、销售属性
         CompletableFuture<Void> spuSaleAttrsFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> {
             if (skuInfo == null) return;
-            List<SpuSaleAttr> spuSaleAttrs = skuDetailFeignClient.getSpuSaleAttr(skuInfo.getSpuId(), skuId).getData();
+            List<SpuSaleAttr> spuSaleAttrs = productSkuDetailFeignClient.getSpuSaleAttr(skuInfo.getSpuId(), skuId).getData();
             skuDetailVO.setSpuSaleAttrList(spuSaleAttrs);
 
             //countDownLatch.countDown();
@@ -276,7 +276,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //6、当前sku的所有兄弟们的所有组合可能性。
         CompletableFuture<Void> valueJsonFuture = skuInfoCompletableFuture.thenAcceptAsync((skuInfo) -> {
             if (skuInfo == null) return;
-            String jsonString = skuDetailFeignClient.getValuesSkuJson(skuInfo.getSpuId()).getData();
+            String jsonString = productSkuDetailFeignClient.getValuesSkuJson(skuInfo.getSpuId()).getData();
             skuDetailVO.setValuesSkuJson(jsonString);
 
             //countDownLatch.countDown();
