@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,9 +25,9 @@ public class CacheServiceImpl implements CacheService {
     StringRedisTemplate redisTemplate;
 
     @Override
-    public Object getCacheData(String key, Type returnType) {
+    public Object getCacheData(String cacheKey, Type returnType) {
         //1. 查询缓存
-        String jsonString = redisTemplate.opsForValue().get(key);
+        String jsonString = redisTemplate.opsForValue().get(cacheKey);
 
         //缓存没有
         if (StringUtils.isEmpty(jsonString)) {
@@ -36,6 +38,26 @@ public class CacheServiceImpl implements CacheService {
             //2. 缓存有
             return JSON.parseObject(jsonString, returnType);
         }
+    }
+
+    ScheduledExecutorService pool = Executors.newScheduledThreadPool(16);
+    @Override
+    public void delayDoubleDel(String cacheKey) {
+        redisTemplate.delete(cacheKey);
+
+        //CompletableFuture.runAsync(() -> {
+        //    try {
+        //        TimeUnit.SECONDS.sleep(10); //一般是核心16线程，每个线程执行双删会睡10s，可能阻塞所有线程
+        //        redisTemplate.delete(cacheKey);
+        //    } catch (InterruptedException e) {
+        //        throw new RuntimeException(e);
+        //    }
+        //});
+
+        pool.schedule(() -> {
+            redisTemplate.delete(cacheKey);
+        }, 10, TimeUnit.SECONDS); //线程不会睡觉，JVM利用时间片算法进行调用
+
     }
 
     @Override

@@ -21,5 +21,11 @@ public interface CacheService {
 
     void saveCacheData(String skuId, Object retVal, long ttl, TimeUnit unit);
 
-    Object getCacheData(String key, Type returnType);
+    Object getCacheData(String cacheKey, Type returnType);
+
+    /**
+     * 延迟双删
+     * @param cacheKey
+     */
+    void delayDoubleDel(String cacheKey);
 }
