@@ -1,8 +1,8 @@
 package com.example.gmall.service.item.service.impl;
 
-import com.example.gmall.common.cache.aspect.annotation.MallCache;
+
 import com.example.gmall.common.constant.RedisConst;
-import com.example.gmall.service.item.feign.SkuDetailFeignClient;
+import com.example.gmall.feign.product.SkuDetailFeignClient;
 import com.example.gmall.service.item.service.SkuDetailService;
 import com.example.gmall.service.product.entity.SkuImage;
 import com.example.gmall.service.product.entity.SkuInfo;
@@ -10,6 +10,7 @@ import com.example.gmall.service.product.entity.SpuSaleAttr;
 import com.example.gmall.service.product.vo.CategoryTreeVO;
 import com.example.gmall.service.product.vo.SkuDetailVO;
 import com.example.gmall.service.product.vo.SkuDetailVO.CategoryViewDTO;
+import com.example.gmall.starter.cache.aspect.annotation.MallCache;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;

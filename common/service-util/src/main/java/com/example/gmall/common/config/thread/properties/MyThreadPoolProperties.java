@@ -14,11 +14,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "gmall.threadpool")
 public class MyThreadPoolProperties {
 
-    private Integer corePoolSize;
+    private Integer corePoolSize = 4;
 
-    private Integer maximumPoolSize;
+    private Integer maximumPoolSize = 8;
 
-    private Long keepAliveTime;
+    private Long keepAliveTime = 5L;
 
-    private Integer workQueueSize;
+    private Integer workQueueSize = 1000;
 }

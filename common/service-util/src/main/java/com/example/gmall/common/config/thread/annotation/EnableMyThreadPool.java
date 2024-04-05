@@ -1,6 +1,6 @@
 package com.example.gmall.common.config.thread.annotation;
 
-import com.example.gmall.common.config.thread.MyThreadPoolAutoConfiguration;
+import com.example.gmall.common.autoconfig.MyThreadPoolAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

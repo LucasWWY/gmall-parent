@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.gmall.common.autoconfig.MinioAutoConfiguration
+  com.example.gmall.common.autoconfig.GlobalExceptionAutoConfiguration,\
+  com.example.gmall.common.config.Swagger2Config,\
+  com.example.gmall.common.autoconfig.MyThreadPoolAutoConfiguration

@@ -1,4 +1,4 @@
-package com.example.gmall.common.config.thread;
+package com.example.gmall.common.autoconfig;
 
 import com.example.gmall.common.config.thread.properties.MyThreadPoolProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

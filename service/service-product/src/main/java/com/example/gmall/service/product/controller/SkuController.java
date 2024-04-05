@@ -5,6 +5,7 @@ import com.example.gmall.common.result.Result;
 import com.example.gmall.service.product.entity.SkuInfo;
 import com.example.gmall.service.product.service.SkuInfoService;
 import com.example.gmall.service.product.vo.SkuSaveInfoVO;
+import com.example.gmall.starter.cache.service.CacheService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,9 @@ public class SkuController {
     @Autowired
     SkuInfoService skuInfoService;
 
-    //@Autowired
-    //CacheService cacheService;
-    //
+    @Autowired
+    CacheService cacheService;
+
     ////上架
     //@GetMapping("/onSale/{skuId}")
     //public Result up(@PathVariable("skuId") Long skuId){
@@ -39,18 +40,18 @@ public class SkuController {
     //    skuInfoService.downGoods(skuId);
     //    return Result.ok();
     //}
-    //
-    //
-    ////修改Sku
-    //@GetMapping("/updateSkuInfo")
-    //public Result updateSkuInfo(@RequestBody SkuSaveVo vo){
-    //    //1、修改数据库
-    //
-    //    //2、删除缓存
-    //    cacheService.delayDoubleDel("sku:info:49");
-    //
-    //    return Result.ok();
-    //}
+
+
+    //修改Sku
+    @GetMapping("/updateSkuInfo")
+    public Result updateSkuInfo(@RequestBody SkuSaveInfoVO vo){
+        //1、修改数据库
+
+        //2、删除缓存
+        cacheService.delayDoubleDel("sku:info:49");
+
+        return Result.ok();
+    }
 
     @ApiOperation("sku分页列表")
     @GetMapping("/list/{page}/{limit}")
