@@ -2,6 +2,7 @@ package com.example.gmall.service.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.gmall.common.constant.RedisConst;
 import com.example.gmall.service.product.entity.BaseCategory1;
 import com.example.gmall.service.product.entity.BaseCategory2;
 import com.example.gmall.service.product.entity.BaseCategory3;
@@ -10,9 +11,9 @@ import com.example.gmall.service.product.service.BaseCategory1Service;
 import com.example.gmall.service.product.service.BaseCategory2Service;
 import com.example.gmall.service.product.service.BaseCategory3Service;
 import com.example.gmall.service.product.vo.CategoryTreeVO;
+import com.example.gmall.starter.cache.aspect.annotation.MallCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.gmall.service.item.aspect.annotation.MallCache;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class BaseCategory1ServiceImpl extends ServiceImpl<BaseCategory1Mapper, B
     BaseCategory3Service baseCategory3Service;
 
 
-    @MallCache
+    @MallCache(cacheKey = RedisConst.CATEGORY_CACHE) //把这个方法的结果进行缓存 通过mall-cache-starter实现，参数有默认值
     @Override
     public List<CategoryTreeVO> getCategoryTree() {
         //select bc1.*, bc2.*, bc3.* from base_category1 bc1
