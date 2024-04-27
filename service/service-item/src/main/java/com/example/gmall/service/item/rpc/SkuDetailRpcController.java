@@ -30,6 +30,8 @@ public class SkuDetailRpcController {
 
         //点击商品 增加hot score
         skuDetailService.incrHotScore(skuId);
+        //不用等待ES更新hot score的返回结果,返回的也是void
+        //所以异步执行incrHotScore
 
         return Result.ok(sKuDetailVO);
     }
