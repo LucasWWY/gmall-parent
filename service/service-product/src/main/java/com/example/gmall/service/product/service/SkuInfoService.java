@@ -12,4 +12,8 @@ import com.example.gmall.service.product.vo.SkuSaveInfoVO;
 public interface SkuInfoService extends IService<SkuInfo> {
 
     void saveSkuInfoData(SkuSaveInfoVO skuSaveInfoVO);
+
+    void upGoods(Long skuId);
+
+    void downGoods(Long skuId);
 }

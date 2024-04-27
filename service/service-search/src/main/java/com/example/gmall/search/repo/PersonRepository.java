@@ -1,6 +1,6 @@
-package com.example.gmall.repo;
+package com.example.gmall.search.repo;
 
-import com.example.gmall.bean.Person;
+import com.example.gmall.search.bean.Person;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

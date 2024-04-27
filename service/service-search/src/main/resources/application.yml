@@ -40,4 +40,7 @@ feign:
 #        connect-timeout: 1000
 #        read-timeout: 4000
 
-
+logging:
+  level:
+    tracer: trace # trace debug info warn error fatal off
+    com.example.gmall.search: trace

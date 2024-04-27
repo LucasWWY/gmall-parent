@@ -1,7 +1,10 @@
 package com.example.gmall.service.product.service;
 
+import com.example.gmall.search.SearchAttr;
 import com.example.gmall.service.product.entity.SkuAttrValue;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author wangweiyedemacbook
@@ -10,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface SkuAttrValueService extends IService<SkuAttrValue> {
 
+    List<SearchAttr> getSkuAttrsAndValue(Long skuId);
 }

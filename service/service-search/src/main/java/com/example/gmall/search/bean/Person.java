@@ -1,4 +1,4 @@
-package com.example.gmall.bean;
+package com.example.gmall.search.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

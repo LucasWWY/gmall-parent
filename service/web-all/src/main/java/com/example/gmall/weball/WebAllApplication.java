@@ -9,7 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringCloudApplication
 @EnableFeignClients(basePackages = {
         "com.example.gmall.feign.product",
-        "com.example.gmall.feign.item"
+        "com.example.gmall.feign.item",
+        "com.example.gmall.feign.search"
 })
 //在一个典型的多模块Spring Boot项目中，虽然各个模块（子项目）可能被组织在不同的包下，但通常都会共享同一个Spring应用上下文。
 //这是因为整个Spring Boot应用启动时，通常只会有一个启动类（带有@SpringBootApplication注解的类），通常位于项目的根模块或主模块中。

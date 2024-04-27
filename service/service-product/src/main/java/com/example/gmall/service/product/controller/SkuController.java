@@ -26,22 +26,6 @@ public class SkuController {
     @Autowired
     CacheService cacheService;
 
-    ////上架
-    //@GetMapping("/onSale/{skuId}")
-    //public Result up(@PathVariable("skuId") Long skuId){
-    //    //商品上架
-    //    skuInfoService.upGoods(skuId);
-    //    return Result.ok();
-    //}
-    //
-    ////下架
-    //@GetMapping("/cancelSale/{skuId}")
-    //public Result cancelSale(@PathVariable("skuId") Long skuId){
-    //    skuInfoService.downGoods(skuId);
-    //    return Result.ok();
-    //}
-
-
     //修改Sku
     @GetMapping("/updateSkuInfo")
     public Result updateSkuInfo(@RequestBody SkuSaveInfoVO vo){
@@ -67,6 +51,20 @@ public class SkuController {
     public Result saveSkuInfo(@RequestBody SkuSaveInfoVO skuSaveInfoVO){
         skuInfoService.saveSkuInfoData(skuSaveInfoVO);
         //爬虫：拿到商品，录制到数据库？
+        return Result.ok();
+    }
+
+    //商品上架：在商家后台，商品已经存在，点击“上架”按钮，上架以后，也要存到ES
+    @GetMapping("/onSale/{skuId}")
+    public Result up(@PathVariable("skuId") Long skuId){
+        skuInfoService.upGoods(skuId);
+        return Result.ok();
+    }
+
+    //下架
+    @GetMapping("/cancelSale/{skuId}")
+    public Result down(@PathVariable("skuId") Long skuId){
+        skuInfoService.downGoods(skuId);
         return Result.ok();
     }
 
