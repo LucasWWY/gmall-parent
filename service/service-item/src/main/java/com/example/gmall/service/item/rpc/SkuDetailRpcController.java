@@ -22,10 +22,14 @@ public class SkuDetailRpcController {
     @Autowired
     SkuDetailService skuDetailService;
 
+    //点击商品 获得 商品详细信息
     @GetMapping("/sku/detail/{skuId}")
     public Result<SkuDetailVO> getSkuDetails(@PathVariable("skuId") Long skuId){
-        //切面拦截
+        //切面拦截：《如果缓存中有，方法不用调》？
         SkuDetailVO sKuDetailVO = skuDetailService.getSkuDetailData(skuId);
+
+        //点击商品 增加hot score
+        skuDetailService.incrHotScore(skuId);
 
         return Result.ok(sKuDetailVO);
     }

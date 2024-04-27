@@ -20,10 +20,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.HighlightQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -87,12 +89,13 @@ public class SearchServiceImpl implements SearchService {
         }
 
         //4、品牌列表;  聚合 aggregations：
-        // ParsedLongTerms
+        // ParsedTerms + 属性类型Long = ParsedLongTerms
         ParsedLongTerms tmIdAgg = result.getAggregations().get("tmIdAgg");
 
         List<SearchRespVO.Trademark> trademarks = tmIdAgg.getBuckets().stream()
                 .map(bucket -> {
                     SearchRespVO.Trademark trademark = new SearchRespVO.Trademark();
+
                     //1、品牌id
                     long tmId = bucket.getKeyAsNumber().longValue();
                     trademark.setTmId(tmId);
@@ -106,29 +109,32 @@ public class SearchServiceImpl implements SearchService {
                     ParsedStringTerms tmLogoAgg = bucket.getAggregations().get("tmLogoAgg");
                     String tmLogo = tmLogoAgg.getBuckets().get(0).getKeyAsString();
                     trademark.setTmLogoUrl(tmLogo);
+
                     return trademark;
                 }).collect(Collectors.toList());
 
         respVO.setTrademarkList(trademarks);
 
 
-        //5、属性列表； aggregations select GROUP_CONCAT(attr_value) group by attrId
+        //5、平台属性列表； aggregations select GROUP_CONCAT(attr_value) group by attrId
         ParsedNested attrAgg = result.getAggregations().get("attrAgg");
-        //属性id聚合结果
+        //平台属性按id聚合
         ParsedLongTerms attrIdAgg = attrAgg.getAggregations().get("attrIdAgg");
         List<SearchRespVO.Attrs> attrsList = attrIdAgg.getBuckets()
                 .stream()
                 .map(bucket -> {
                     SearchRespVO.Attrs attrs = new SearchRespVO.Attrs();
-                    //属性id
+
+                    //平台属性id
                     long attrId = bucket.getKeyAsNumber().longValue();
                     attrs.setAttrId(attrId);
-                    //属性名
+
+                    //平台属性名
                     ParsedStringTerms attrNameAgg = bucket.getAggregations().get("attrNameAgg");
                     String attrName = attrNameAgg.getBuckets().get(0).getKeyAsString();
                     attrs.setAttrName(attrName);
 
-                    //属性值
+                    //平台属性值
                     ParsedStringTerms attrValueAgg = bucket.getAggregations().get("attrValueAgg");
                     List<String> valueList = attrValueAgg.getBuckets()
                             .stream()
@@ -159,8 +165,8 @@ public class SearchServiceImpl implements SearchService {
         List<Goods> goods = result.getSearchHits().stream()
                 .map(item -> {
                     Goods content = item.getContent();
-                    if(!StringUtils.isEmpty(searchParamVO.getKeyword())){
-                        //模糊检索带高亮显示
+                    if(!StringUtils.isEmpty(searchParamVO.getKeyword())){ //如果有keyword，返回结果需高亮
+                        //模糊检索 高亮显示
                         String newTitle = item.getHighlightField("title").get(0);
                         content.setTitle(newTitle);
                     }
@@ -293,26 +299,11 @@ public class SearchServiceImpl implements SearchService {
         //=============排序结束==============
 
         //=============分页开始==============
-        //页码是从0开始
         Pageable pageable = PageRequest.of(searchParamVO.getPageNo()-1, 10); //PageRequest.of()的pageNo是从0开始的
         query.setPageable(pageable);
         //=============分页结束==============
 
-
-        //==============高亮===============
-        if(!StringUtils.isEmpty(searchParamVO.getKeyword())){
-            //1、构建高亮
-            HighlightBuilder builder = new HighlightBuilder()
-                    .field("title")
-                    .preTags("<span style='color:red'>")
-                    .postTags("</span>");
-
-            HighlightQuery highlightQuery = new HighlightQuery(builder);
-            query.setHighlightQuery(highlightQuery);
-        }
-
-
-        //=============聚合分析开始==品牌============
+        //=============聚合分析开始 - 品牌============
         //品牌id聚合
         TermsAggregationBuilder tmIdAgg = AggregationBuilders
                 .terms("tmIdAgg")
@@ -325,6 +316,7 @@ public class SearchServiceImpl implements SearchService {
                 .field("tmName")
                 .size(1);
         tmIdAgg.subAggregation(tmNameAgg);
+
         //品牌logo子聚合
         TermsAggregationBuilder tmLogoAgg = AggregationBuilders
                 .terms("tmLogoAgg")
@@ -335,22 +327,23 @@ public class SearchServiceImpl implements SearchService {
         query.addAggregation(tmIdAgg);
 
 
-        //=============聚合分析开始==属性============
+        //=============聚合分析开始 - 平台属性============
         NestedAggregationBuilder attrAgg = AggregationBuilders.nested("attrAgg", "attrs");
 
-        //属性id聚合分析
+        //平台属性id聚合分析
         TermsAggregationBuilder attrIdAgg = AggregationBuilders
                 .terms("attrIdAgg")
                 .field("attrs.attrId")
                 .size(200);
-        //属性名聚合分析
+
+        //平台属性名聚合分析
         TermsAggregationBuilder attrNameAgg = AggregationBuilders
                 .terms("attrNameAgg")
                 .field("attrs.attrName")
                 .size(1);
         attrIdAgg.subAggregation(attrNameAgg);
 
-        //属性值聚合分析
+        //平台属性值聚合分析
         TermsAggregationBuilder attrValueAgg = AggregationBuilders
                 .terms("attrValueAgg")
                 .field("attrs.attrValue")
@@ -361,8 +354,18 @@ public class SearchServiceImpl implements SearchService {
         query.addAggregation(attrAgg);
         //=============聚合分析结束==============
 
+        //==============高亮开始===============
+        if(!StringUtils.isEmpty(searchParamVO.getKeyword())){ //只有有关键字检索的时候才需要高亮
+            //1、构建高亮
+            HighlightBuilder builder = new HighlightBuilder()
+                    .field("title")
+                    .preTags("<span style='color:red'>")
+                    .postTags("</span>");
 
-
+            HighlightQuery highlightQuery = new HighlightQuery(builder);
+            query.setHighlightQuery(highlightQuery);
+        }
+        //==============高亮结束===============
 
         return query;
     }
@@ -379,6 +382,22 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public void updateHotScore(Long skuId, Long score) {
+        ////1、查询到原来的数据
+        //Goods goods = goodsRepository.findById(skuId).get();
+        ////2、更新热度分
+        //goods.setHotScore(score);
+        ////3、保存
+        //goodsRepository.save(goods); //全量更新，其他没有的字段 setXXX 会直接变成默认值
+
+        Document document = Document.create();
+        document.put("hotScore", score);
+
+        UpdateQuery updateQuery = UpdateQuery.builder("" + skuId)
+                .withDocAsUpsert(true)
+                .withDocument(document)
+                .build();
+
+        elasticsearchRestTemplate.update(updateQuery, IndexCoordinates.of("goods"));
 
     }
 }

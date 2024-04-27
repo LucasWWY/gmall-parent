@@ -10,4 +10,6 @@ import com.example.gmall.service.product.vo.SkuDetailVO;
  */
 public interface SkuDetailService {
     SkuDetailVO getSkuDetailData(Long skuId);
+
+    void incrHotScore(Long skuId);
 }

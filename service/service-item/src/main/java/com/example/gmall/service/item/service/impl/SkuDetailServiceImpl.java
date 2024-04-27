@@ -3,6 +3,7 @@ package com.example.gmall.service.item.service.impl;
 
 import com.example.gmall.common.constant.RedisConst;
 import com.example.gmall.feign.product.ProductSkuDetailFeignClient;
+import com.example.gmall.feign.search.SearchFeignClient;
 import com.example.gmall.service.item.service.SkuDetailService;
 import com.example.gmall.service.product.entity.SkuImage;
 import com.example.gmall.service.product.entity.SkuInfo;
@@ -38,6 +39,9 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
     @Autowired
     ProductSkuDetailFeignClient productSkuDetailFeignClient;
+
+    @Autowired
+    SearchFeignClient searchFeignClient;
 
     @Autowired //自定义的线程池
     ThreadPoolExecutor coreExecutor;
@@ -321,5 +325,17 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         categoryViewDTO.setCategory3Name(child2.getCategoryName());
 
         return categoryViewDTO;
+    }
+
+    @Override
+    public void incrHotScore(Long skuId) {
+        //DB中没有这个field，只有ES中有hot score，所以需要远程调用service-search的ES，但是rpc调用太慢，所以不是每次加而是累计到一定数量再加
+        //1. 累计热度
+        Long score = redisTemplate.opsForValue().increment("sku:hotscore:" + skuId, 1); //应该是每次+1
+        if (score%100 == 0) {
+            //2. 达到一定数量，调用ES更新hot score
+            searchFeignClient.updateHotScore(skuId, score);
+        }
+
     }
 }
