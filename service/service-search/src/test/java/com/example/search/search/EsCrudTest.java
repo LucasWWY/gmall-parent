@@ -1,7 +1,7 @@
-package com.example.gmall.search;
+package com.example.search.search;
 
-import com.example.gmall.bean.Person;
-import com.example.gmall.repo.PersonRepository;
+import com.example.gmall.search.bean.Person;
+import com.example.gmall.search.repo.PersonRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

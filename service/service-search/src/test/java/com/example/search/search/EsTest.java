@@ -1,6 +1,6 @@
-package com.example.gmall.search;
+package com.example.search.search;
 
-import com.example.gmall.bean.Person;
+import com.example.gmall.search.bean.Person;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.jupiter.api.Test;
