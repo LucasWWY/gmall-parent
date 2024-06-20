@@ -10,10 +10,16 @@ spring:
           uri: lb://service-item # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
           predicates:
             - Path=/admin/item/**
+
         - id: product_route # 路由id
           uri: lb://service-product # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
           predicates: # 断言
             - Path=/admin/product/**
+
+        - id: user_route
+          uri: lb://service-user # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance
+          predicates:
+            - Path=/api/user/** #只要请求URL的路径部分包含 /api/user/ 就会匹配
 
         #客户端，请求url：http://gmall.com/ 因为有先后匹配顺序 + 精确匹配，所以要放在后面
         - id: weball_route
@@ -28,6 +34,23 @@ spring:
             allowedMethods: "*" #允许所有方式 GET POST DELETE ....
             allowedHeaders: "*"
             allowCredentials: true #跨域携带Cookie
+
+app:
+  auth:
+    anyone-url:  #直接放行的路径
+      - /img/**
+      - /js/**
+      - /css/**
+
+    deny-url:  #所有人无论是谁，登录或没，都不能访问，因为这个是内部路径，仅供rpc调用
+      - /api/inner/**
+
+    authen-url: #需要认证才能访问的路径。也就是必须登录才能访问，没登录的打回登录页
+      - /**/auth/**
+      - /trade.html
+
+    login-page: http://passport.gmall.com/login.html  #登录页地址
+
 
 #spring:
 #  zipkin:

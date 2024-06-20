@@ -1,0 +1,46 @@
+server:
+  port: 10000
+
+# 继承service父模块的数据库依赖，所以autoconfiguration总是会报错
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+      connection-timeout: 1s
+      read-timeout: 30s
+#  main:
+#    allow-bean-definition-overriding: true #允许bean的覆盖: feign-clients/product/两个feign client配置集中在一个重名的bean中：service-product.FeignClientSpecification
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+# redis已经抽取到nacos上了
+#  redis:
+#    host: 192.168.241.188
+#    port: 6379
+#    password:
+
+gmall:
+  threadpool:
+    core-pool-size: 8
+    maximum-pool-size: 24
+    keep-alive-time: 5 #单位由线程池的参数TimeUnit决定，见MyThreadPoolAutoConfiguration
+    work-queue-size: 3000
+
+feign:
+  client:
+    default-config: default
+    config:
+      default:
+        connect-timeout: 1000
+        read-timeout: 4000
+        retryer: com.example.gmall.service.item.retryer.Retryer3
+#      service-product:
+#        connect-timeout: 1000
+#        read-timeout: 4000
+
+logging:
+  level:
+    tracer: trace # trace debug info warn error fatal off
+    com.example.gmall.search: trace
