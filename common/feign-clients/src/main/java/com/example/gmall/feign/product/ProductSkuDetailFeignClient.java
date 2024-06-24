@@ -68,7 +68,7 @@ public interface ProductSkuDetailFeignClient {
      * @param skuId
      * @return
      */
-    @GetMapping("/skusaleattr/{spuId}/{skuId}")
+    @GetMapping("/skusaleattrttr/{spuId}/{skuId}")
     Result<List<SpuSaleAttr>> getSpuSaleAttr(@PathVariable("spuId") Long spuId, @PathVariable("skuId") Long skuId);
 
     /**

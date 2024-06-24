@@ -1,10 +1,10 @@
 spring:
   application:
-    name: service-search
+    name: service-cart
   cloud:
     nacos:
       server-addr: 192.168.241.188:8848
       config:
         shared-configs[0].data-id: zipkin.yml #从nacos读取zipkin.yml配置
         shared-configs[1].data-id: redis.yml #从nacos读取redis.yml配置
-        shared-configs[2].data-id: feign.yml #从nacos读取feign.yml配置
+#        shared-configs[2].data-id: feign.yml #从nacos读取feign.yml配置

@@ -1,0 +1,49 @@
+每个feign接口最终在容器中是一个代理对象 （或AOP实现)。
+
+远程调用逻辑（可以被抽取）
+1、远程建立链接
+2、数据发给远程（序列化要发送的数据：内存数据通过网线发给对方）
+3、等待远程处理
+4、给我们响应数据 (反序列化远程传来的数据）
+5、返回结果
+
+cartFeignClient.addToCart(skuId, skuNum）代理对象调方法
+1）判断是否是equals,hashCode,toString方法。如果是直接调用本地的toString等
+2）开始远程调用：ReflectiveFeign.class
+    2.1) Map<Method, MethodHandler> dispatch；派发器。保存了每个方法，用哪个处理器进行处理
+    method - SynchronousMethodHandler 默认每个方法都使用自己的 SynchronousMethodHandler（同步方法处理器【阻塞式的发起一个远程调用】）
+    2.2）调用SynchronousMethodHandler.invoke(args) 开始远程调用
+    1. 创建一个请求模板：RequestTemplate
+    2. 找设置项 options
+    3. 重试器
+    4. while(true) {
+    //  return 远程调用：executeAndDecode(template, options)
+    //如果远程调用过程中炸了：
+    //  拿到异常，调用重试器的 continueOrPropagate()
+    //  1）如果重试器还抛异常，就整个炸掉，抛出异常，不再重试
+    //  2）如果重试器不抛异常，continue 继续while循环
+    }
+
+    4. executeAndDecode(RequestTemplate template, Options options)： 执行（发起远程调用） + 解码（把远程返还的数据json流反序列化成对象）
+        //发请求 接响应
+        [发请求、接响应]
+        1. 得到请求：Request request = targetRequest(template)
+            根据 template（请求模板），创建一个请求对象 new Request
+
+            因为template没有header，所以新建的请求没有header
+            RequestTemplate只封装Feign Client (i.e.@FeignClient())中方法的参数，如果
+            Result<AddCartSuccessVO> addToCart(@PathVariable("skuId") Long skuId, @RequestParam Integer skuNum);中
+            有@RequestHeader("userId") Long userId，那么template中就会有userId
+
+            所以我们需要在这个新建request发起调用之前，通过拦截器介入，加入header
+            interceptor.apply(template)
+
+        2. 发起调用：response = client.execute(request, options)
+            1）根据 serviceName 得到负载均衡客户端（去nacos要到这个微服务所有上线的ip地址）并缓存起来
+            2）URL.openConnection，并写出数据
+
+        3. 得到响应：response = response.toBuilder()
+                    .request(request)
+                    .requestTemplate(template)
+                    .build();
+

@@ -94,7 +94,11 @@ public class UserAuthenGatewayFilter implements GlobalFilter {
             }
         }
 
-        return userIdThrougth(chain, exchange, userInfo); //用户id穿透: 从网关 -> 其他服务
+        //4、 用户没带token / 用户真的登录了
+        //4.1 用户没带token，userInfo在if (authenCount > 0)得到null，但此时还有userTempId需要透传 给购物车使用
+        //4.2 用户真的登录了，userInfo在if (authenCount > 0)得到用户信息，此时userId需要透传 给下游服务使用
+        return userIdThrough(chain, exchange, userInfo); //用户id穿透: 从网关 -> 其他服务
+
 
         //SpringBoot的响应式编程 - 放行
         //Mono<Void> filter = chain.filter(exchange)
@@ -107,10 +111,17 @@ public class UserAuthenGatewayFilter implements GlobalFilter {
     }
 
 
-    private Mono<Void> userIdThrougth(GatewayFilterChain chain, ServerWebExchange exchange, UserInfo userInfo) {
+    private Mono<Void> userIdThrough(GatewayFilterChain chain, ServerWebExchange exchange, UserInfo userInfo) {
         //1、透传: 请求的数据都是只读的不能修改
         ServerHttpRequest.Builder reqBuilder = exchange.getRequest()
-                .mutate(); //请求是不可变的，所以gate要用decorator去wrap原有的request，然后通过mutate decorator去覆盖request的properties
+                .mutate(); //所以gate要用decorator去wrap原有的request，然后通过mutate decorator去覆盖request的properties
+
+        //exchange.getRequest().getHeaders().add("userId", userInfo.getId().toString()); 是不行的
+        //exchange.getRequest()
+        //        .mutate()
+        //        .header("userId", userInfo.getId().toString())
+        //        .header("userTempId", getTempId(exchange))
+        //        .build();
 
         //2、用户id放在请求头
         if(userInfo!=null){
@@ -125,7 +136,7 @@ public class UserAuthenGatewayFilter implements GlobalFilter {
         if(!StringUtils.isEmpty(tempId)){
             log.info("用户临时信息放在头中，往下透传");
             //只要构造完成，老的exchange里面的request也会跟着变
-            reqBuilder.header(RedisConst.TEMP_ID_HEADER, tempId)
+            reqBuilder.header(RedisConst.USER_TEMP_ID_HEADER, tempId)
                     .build();
         }
 
@@ -136,13 +147,12 @@ public class UserAuthenGatewayFilter implements GlobalFilter {
     private String getTempId(ServerWebExchange exchange) {
         //1、拿到请求
         ServerHttpRequest request = exchange.getRequest();
-        //2、先看请求头
+        //2、先看请求头（ajax请求）
         String token = request.getHeaders().getFirst("userTempId");
         if (!StringUtils.isEmpty(token)) {
             return token;
         }
-
-        //3、如果头没有，就看cookie； 有可能没登录这个cookie都没有
+        //3、如果头没有，就看cookie（非ajax请求）
         HttpCookie first = request.getCookies().getFirst("userTempId");
         if (first != null) {
             return first.getValue();

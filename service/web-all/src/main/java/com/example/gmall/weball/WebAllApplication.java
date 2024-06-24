@@ -1,6 +1,7 @@
 package com.example.gmall.weball;
 
 import com.example.gmall.common.annotation.EnableExceptionHandler;
+import com.example.gmall.common.annotation.EnableUserAuthFeignInterceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -12,6 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         "com.example.gmall.feign.item",
         "com.example.gmall.feign.search"
 })
+@EnableUserAuthFeignInterceptor //谁需要远程调用 + 隐式传参 就在谁前面加，比如web-all -> service-cart -> service-order -> service-payment 那么这几个调用者都要加，因为这个链路上都需要userId或者userTempId
 //在一个典型的多模块Spring Boot项目中，虽然各个模块（子项目）可能被组织在不同的包下，但通常都会共享同一个Spring应用上下文。
 //这是因为整个Spring Boot应用启动时，通常只会有一个启动类（带有@SpringBootApplication注解的类），通常位于项目的根模块或主模块中。
 //这个启动类负责初始化Spring应用上下文，整个项目共享一个Spring应用上下文，并触发组件扫描。如果根模块没有包含一个启动类，那么项目的启动和组件扫描就依赖于子模块中的启动类。
