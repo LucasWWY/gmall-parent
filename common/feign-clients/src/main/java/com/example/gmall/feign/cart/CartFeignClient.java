@@ -1,12 +1,12 @@
 package com.example.gmall.feign.cart;
 
+import com.example.gmall.cart.entity.CartItem;
 import com.example.gmall.cart.vo.AddCartSuccessVO;
 import com.example.gmall.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Lucas (Weiye) Wang
@@ -21,6 +21,21 @@ public interface CartFeignClient {
     @GetMapping("/add/{skuId}") // /api/inner/rpc/cart + /add/{skuId} 在服务实例内将请求路由到具体的处理方法
     Result<AddCartSuccessVO> addToCart(@PathVariable("skuId") Long skuId,
                                        @RequestParam Integer skuNum);
+
+    /**
+     * 删除选中的
+     * @return
+     */
+    @DeleteMapping("/deleteChecked")
+    Result deleteChecked();
+
+
+    /**
+     * 获取所有选中的商品
+     * @return
+     */
+    @GetMapping("/checkeds")
+    Result<List<CartItem>> getChecked();
 
 
 }

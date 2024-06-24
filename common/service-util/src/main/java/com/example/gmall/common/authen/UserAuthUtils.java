@@ -25,10 +25,20 @@ public class UserAuthUtils {
         Long userIdl = null;
         Long userTempIdl = null;
 
-        userIdl = Long.parseLong(userId);
-        userTempIdl = Long.valueOf(userTempId);
+        try {
+            userIdl = Long.parseLong(userId);
+            userTempIdl = Long.parseLong(userTempId);
+        } catch (Exception e) {
+
+        }
 
         return new UserAuthInfoVO(userIdl, userTempIdl);
+    }
+
+    public static HttpServletRequest getRequest() {
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
+        return request;
     }
 
 }

@@ -1,11 +1,15 @@
 package com.example.gmall.rpc;
 
+import com.example.gmall.cart.entity.CartItem;
 import com.example.gmall.cart.vo.AddCartSuccessVO;
 import com.example.gmall.common.result.Result;
 import com.example.gmall.service.CartService;
+import com.example.gmall.service.product.entity.SkuInfo;
 import groovy.util.logging.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Lucas (Weiye) Wang
@@ -35,10 +39,35 @@ public class CartRpcController {
                                               //跨层传递数据(方法参数，线程绑定，共享到公共位置(e.g.redis, mysql))
                                               //SpringMVC自带的RequestContextHolder实现了线程绑定
                                               ) {
-        AddCartSuccessVO addCartSuccessVO = cartService.addToCart(skuId, skuNum);
+        String cartKey = cartService.determineCartKey();
 
+        SkuInfo skuInfo = cartService.addToCart(skuId, skuNum, cartKey);
 
         return Result.ok();
+    }
+
+    @DeleteMapping("/deleteChecked")
+    public String deleteChecked(){
+
+        String cartKey = cartService.determineCartKey();
+
+        cartService.deleteChecked(cartKey);
+
+        return "redirect:/cart.html"; //不然url还是deleteChecked，如果此时有选中的item，按下F5就会被删除
+    }
+
+    /**
+     * 获取所有选中的商品
+     * @return
+     */
+    @GetMapping("/checkeds")
+    public Result<List<CartItem>> getChecked(){
+
+        String cartKey = cartService.determineCartKey();
+
+        List<CartItem> checkeds = cartService.getCheckeds(cartKey);
+
+        return Result.ok(checkeds);
     }
 
 }

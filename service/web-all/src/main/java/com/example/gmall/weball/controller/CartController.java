@@ -67,4 +67,32 @@ public class CartController {
         return "cart/addCart";
     }
 
+    /**
+     * 购物车列表页
+     * 页面渲染：
+     * 1、服务端渲染： 服务器负责把页面的全部内容组装完全再返回
+     * 2、客户端渲染：
+     *   - 客户端给服务器发送ajax请求
+     *   - 服务器把数据返给浏览器，客户端把数据填充到这个页面
+     * @return
+     */
+    @GetMapping("/cart.html")
+    public String cartListPage(){
+
+        return "cart/index"; //死页，index里面都是固定的东西，是前端通过ajax请求cartApiController得到数据的
+    }
+
+
+    /**
+     * 删除选中的商品
+     * @return
+     */
+    @GetMapping("/cart/deleteChecked")
+    public String deleteChecked(){
+
+        cartFeignClient.deleteChecked();
+
+        return "redirect:http://cart.gmall.com/cart.html";
+    }
+
 }

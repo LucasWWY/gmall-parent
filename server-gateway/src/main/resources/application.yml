@@ -21,6 +21,11 @@ spring:
           predicates:
             - Path=/api/user/** #只要请求URL的路径部分包含 /api/user/ 就会匹配
 
+        - id: cart_route
+          uri: lb://service-cart
+          predicates:
+            - Path=/api/cart/** #前端ajax请求
+
         #客户端，请求url：http://gmall.com/ 因为有先后匹配顺序 + 精确匹配，所以要放在后面
         - id: weball_route
           uri: lb://web-all # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance

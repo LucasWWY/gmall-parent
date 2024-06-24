@@ -1,6 +1,6 @@
 package com.example.gmall.service;
 
-import com.example.gmall.cart.entity.CartInfo;
+import com.example.gmall.cart.entity.CartItem;
 import com.example.gmall.service.product.entity.SkuInfo;
 
 import java.util.List;
@@ -19,13 +19,13 @@ public interface CartService {
      * @param skuNum      添加的数量
      * @return
      */
-    SkuInfo addToCart(Long skuId, Integer skuNum);
+    SkuInfo addToCart(Long skuId, Integer skuNum, String cartKey);
 
     /**
      * 决定要操作哪个购物车
      * @return
      */
-    String determinCartKey();
+    String determineCartKey();
 
     /**
      * 从购物车中获取一个商品
@@ -33,14 +33,14 @@ public interface CartService {
      * @param skuId
      * @return
      */
-    CartInfo getItem(String cartKey, Long skuId);
+    CartItem getItem(String cartKey, Long skuId);
 
     /**
      * 保存一项到购物车
      * @param cartKey
      * @param item
      */
-    void saveItem(String cartKey, CartInfo item);
+    void saveItem(String cartKey, CartItem item);
 
 
     /**
@@ -48,8 +48,13 @@ public interface CartService {
      * @param caryKey
      * @return
      */
-    List<CartInfo> getCartItems(String caryKey);
+    List<CartItem> getCartItems(String caryKey);
 
+    /**
+     * 专供购物车列表用的
+     * @return
+     */
+    List<CartItem> displayItems();
 
     /**
      * 修改购物车商品的数量
@@ -80,17 +85,11 @@ public interface CartService {
      */
     void deleteChecked(String cartKey);
 
-    /**
-     * 专供购物车列表用的
-     * @return
-     */
-    List<CartInfo> displayItems();
-
 
     /**
      * 获取选中的商品
      * @param cartKey
      * @return
      */
-    List<CartInfo>  getCheckeds(String cartKey);
+    List<CartItem>  getCheckeds(String cartKey);
 }

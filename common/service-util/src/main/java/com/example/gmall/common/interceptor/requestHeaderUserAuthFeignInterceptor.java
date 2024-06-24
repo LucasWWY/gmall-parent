@@ -31,6 +31,7 @@ public class  requestHeaderUserAuthFeignInterceptor implements RequestIntercepto
         //重复使用 封装起来
         UserAuthInfoVO info = UserAuthUtils.getUserAuthInfo();
 
+
         requestTemplate.header(RedisConst.USER_ID_HEADER, String.valueOf(info.getUserId()));
         requestTemplate.header(RedisConst.USER_TEMP_ID_HEADER, String.valueOf(info.getUserTempId()));
 

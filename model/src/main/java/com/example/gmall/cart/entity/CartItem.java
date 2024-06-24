@@ -14,7 +14,7 @@ import java.util.Date;
  * @Description
  */
 @Data
-public class CartInfo implements Serializable {
+public class CartItem implements Serializable {
     /**
      * skuid
      */

@@ -28,7 +28,8 @@ public enum ResultCodeEnum {
     COUPON_GET(220, "优惠券已经领取"),
     COUPON_LIMIT_GET(221, "优惠券已发放完毕"),
     CART_ITEM_NUM_OVERFLOW(222, "单个商品数量不能超过200"),
-    CART_ITEM_COUNT_OVERFLOW(223, "购物车商品总数不能超过200");
+    CART_ITEM_COUNT_OVERFLOW(223, "购物车商品总数不能超过200"),
+    INVAILD_PARAM(224, "参数错误");
 
     private Integer code;
 
