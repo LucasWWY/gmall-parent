@@ -1,8 +1,8 @@
 package com.example.gmall.service.product.service;
 
-import com.example.gmall.service.product.entity.SpuInfo;
+import com.example.gmall.model.product.entity.SpuInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.gmall.service.product.vo.SpuSaveInfoVO;
+import com.example.gmall.model.product.vo.SpuSaveInfoVO;
 
 /**
 * @author wangweiyedemacbook

@@ -2,7 +2,7 @@ package com.example.gmall.common.interceptor;
 
 import com.example.gmall.common.authen.UserAuthUtils;
 import com.example.gmall.common.constant.RedisConst;
-import com.example.gmall.user.vo.UserAuthInfoVO;
+import com.example.gmall.model.user.vo.UserAuthInfoVO;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;

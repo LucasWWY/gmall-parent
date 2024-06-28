@@ -1,7 +1,7 @@
 package com.example.gmall.feign.cart;
 
-import com.example.gmall.cart.entity.CartItem;
-import com.example.gmall.cart.vo.AddCartSuccessVO;
+import com.example.gmall.model.cart.entity.CartItem;
+import com.example.gmall.model.cart.vo.AddCartSuccessVO;
 import com.example.gmall.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;

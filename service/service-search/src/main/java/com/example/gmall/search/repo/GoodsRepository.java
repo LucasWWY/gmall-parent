@@ -1,6 +1,6 @@
 package com.example.gmall.search.repo;
 
-import com.example.gmall.search.Goods;
+import com.example.gmall.model.search.Goods;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

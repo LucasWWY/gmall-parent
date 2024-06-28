@@ -1,6 +1,6 @@
 package com.example.gmall.service.product.mapper;
 
-import com.example.gmall.service.product.entity.BaseAttrInfo;
+import com.example.gmall.model.product.entity.BaseAttrInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 

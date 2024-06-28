@@ -1,8 +1,8 @@
 package com.example.gmall.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.gmall.user.entity.UserInfo;
-import com.example.gmall.user.vo.LoginSuccessVO;
+import com.example.gmall.model.user.entity.UserInfo;
+import com.example.gmall.model.user.vo.LoginSuccessVO;
 
 /**
 * @author wangweiyedemacbook

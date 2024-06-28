@@ -1,8 +1,8 @@
 package com.example.gmall.service.product.mapper;
 
-import com.example.gmall.service.product.entity.SpuSaleAttr;
+import com.example.gmall.model.product.entity.SpuSaleAttr;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.gmall.service.product.vo.ValueSkuJsonVO;
+import com.example.gmall.model.product.vo.ValueSkuJsonVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

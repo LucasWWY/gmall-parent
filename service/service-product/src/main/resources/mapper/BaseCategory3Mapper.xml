@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.gmall.service.product.mapper.BaseCategory3Mapper">
 
-    <resultMap id="BaseResultMap" type="com.example.gmall.service.product.entity.BaseCategory3">
+    <resultMap id="BaseResultMap" type="com.example.gmall.model.product.entity.BaseCategory3">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="category2Id" column="category2_id" jdbcType="BIGINT"/>

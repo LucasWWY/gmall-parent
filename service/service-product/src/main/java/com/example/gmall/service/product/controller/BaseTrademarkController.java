@@ -2,7 +2,7 @@ package com.example.gmall.service.product.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.gmall.common.result.Result;
-import com.example.gmall.service.product.entity.BaseTrademark;
+import com.example.gmall.model.product.entity.BaseTrademark;
 import com.example.gmall.service.product.service.BaseTrademarkService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

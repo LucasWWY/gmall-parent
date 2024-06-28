@@ -1,8 +1,8 @@
 package com.example.gmall.service.product.service;
 
-import com.example.gmall.service.product.entity.SkuInfo;
+import com.example.gmall.model.product.entity.SkuInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.gmall.service.product.vo.SkuSaveInfoVO;
+import com.example.gmall.model.product.vo.SkuSaveInfoVO;
 
 /**
 * @author wangweiyedemacbook

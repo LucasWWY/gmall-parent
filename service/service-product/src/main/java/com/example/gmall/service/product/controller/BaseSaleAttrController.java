@@ -1,7 +1,7 @@
 package com.example.gmall.service.product.controller;
 
 import com.example.gmall.common.result.Result;
-import com.example.gmall.service.product.entity.BaseSaleAttr;
+import com.example.gmall.model.product.entity.BaseSaleAttr;
 import com.example.gmall.service.product.service.BaseSaleAttrService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;

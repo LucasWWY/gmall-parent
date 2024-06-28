@@ -1,8 +1,8 @@
 package com.example.gmall.service.product.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.gmall.search.SearchAttr;
-import com.example.gmall.service.product.entity.SkuAttrValue;
+import com.example.gmall.model.search.SearchAttr;
+import com.example.gmall.model.product.entity.SkuAttrValue;
 import com.example.gmall.service.product.service.SkuAttrValueService;
 import com.example.gmall.service.product.mapper.SkuAttrValueMapper;
 import org.springframework.stereotype.Service;

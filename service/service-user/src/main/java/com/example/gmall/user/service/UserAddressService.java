@@ -1,7 +1,7 @@
 package com.example.gmall.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.gmall.user.entity.UserAddress;
+import com.example.gmall.model.user.entity.UserAddress;
 
 /**
 * @author wangweiyedemacbook

@@ -1,7 +1,7 @@
 package com.example.gmall.service.item;
 
 import com.alibaba.fastjson.JSON;
-import com.example.gmall.service.product.entity.SkuImage;
+import com.example.gmall.model.product.entity.SkuImage;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;

@@ -1,7 +1,7 @@
 package com.example.gmall.service.product.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.gmall.service.product.entity.BaseTrademark;
+import com.example.gmall.model.product.entity.BaseTrademark;
 import com.example.gmall.service.product.service.BaseTrademarkService;
 import com.example.gmall.service.product.mapper.BaseTrademarkMapper;
 import org.springframework.stereotype.Service;

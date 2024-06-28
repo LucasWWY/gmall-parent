@@ -1,6 +1,6 @@
 package com.example.gmall.weball.controller;
 
-import com.example.gmall.cart.vo.AddCartSuccessVO;
+import com.example.gmall.model.cart.vo.AddCartSuccessVO;
 import com.example.gmall.common.result.Result;
 import com.example.gmall.feign.cart.CartFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;

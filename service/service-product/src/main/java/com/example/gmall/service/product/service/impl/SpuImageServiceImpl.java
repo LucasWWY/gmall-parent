@@ -1,7 +1,7 @@
 package com.example.gmall.service.product.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.gmall.service.product.entity.SpuImage;
+import com.example.gmall.model.product.entity.SpuImage;
 import com.example.gmall.service.product.service.SpuImageService;
 import com.example.gmall.service.product.mapper.SpuImageMapper;
 import org.springframework.stereotype.Service;

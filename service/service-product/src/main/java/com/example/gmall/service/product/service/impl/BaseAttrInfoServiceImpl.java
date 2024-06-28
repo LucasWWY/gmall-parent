@@ -1,8 +1,8 @@
 package com.example.gmall.service.product.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.gmall.service.product.entity.BaseAttrInfo;
-import com.example.gmall.service.product.entity.BaseAttrValue;
+import com.example.gmall.model.product.entity.BaseAttrInfo;
+import com.example.gmall.model.product.entity.BaseAttrValue;
 import com.example.gmall.service.product.mapper.BaseAttrInfoMapper;
 import com.example.gmall.service.product.service.BaseAttrInfoService;
 import com.example.gmall.service.product.service.BaseAttrValueService;

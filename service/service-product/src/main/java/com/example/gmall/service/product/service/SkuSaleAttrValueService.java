@@ -1,6 +1,6 @@
 package com.example.gmall.service.product.service;
 
-import com.example.gmall.service.product.entity.SkuSaleAttrValue;
+import com.example.gmall.model.product.entity.SkuSaleAttrValue;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

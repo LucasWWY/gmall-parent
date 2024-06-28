@@ -18,4 +18,5 @@ public class RedisConst {
     public static final String USER_TEMP_ID_HEADER = "userTempId";
     public static final String CART_INFO = "cart:info:";
     public static final Integer CART_ITEM_NUM_LIMIT = 200;
+    public static final String REPEAT_TOKEN = "repeat:token:";
 }

@@ -1,7 +1,7 @@
 package com.example.gmall.service.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.gmall.service.product.entity.BaseCategory3;
+import com.example.gmall.model.product.entity.BaseCategory3;
 
 /**
 * @author wangweiyedemacbook

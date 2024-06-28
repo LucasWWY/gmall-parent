@@ -1,10 +1,10 @@
 package com.example.gmall.search.rpc;
 
 import com.example.gmall.common.result.Result;
-import com.example.gmall.search.Goods;
+import com.example.gmall.model.search.Goods;
 import com.example.gmall.search.service.SearchService;
-import com.example.gmall.search.vo.SearchParamVO;
-import com.example.gmall.search.vo.SearchRespVO;
+import com.example.gmall.model.search.vo.SearchParamVO;
+import com.example.gmall.model.search.vo.SearchRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

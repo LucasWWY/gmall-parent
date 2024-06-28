@@ -21,13 +21,13 @@
     1、全部分类都查出来自己用代码组裝
     2、数据库一次性返回层级关系并封装好
     -->
-    <resultMap id="CategoryTreeRM" type="com.example.gmall.service.product.vo.CategoryTreeVO">
+    <resultMap id="CategoryTreeRM" type="com.example.gmall.model.product.vo.CategoryTreeVO">
         <id column="c1id" property="categoryId"/>
         <result column="c1name" property="categoryName"/>
-        <collection property="categoryChild" ofType="com.example.gmall.service.product.vo.CategoryTreeVO">
+        <collection property="categoryChild" ofType="com.example.gmall.model.product.vo.CategoryTreeVO">
             <id column="c2id" property="categoryId"/>
             <result column="c2name" property="categoryName"/>
-            <collection property="categoryChild" ofType="com.example.gmall.service.product.vo.CategoryTreeVO">
+            <collection property="categoryChild" ofType="com.example.gmall.model.product.vo.CategoryTreeVO">
                 <id column="c3id" property="categoryId"/>
                 <result column="c3name" property="categoryName"/>
             </collection>

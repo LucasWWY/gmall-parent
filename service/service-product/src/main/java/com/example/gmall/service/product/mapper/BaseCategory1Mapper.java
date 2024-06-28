@@ -1,8 +1,8 @@
 package com.example.gmall.service.product.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.gmall.service.product.entity.BaseCategory1;
-import com.example.gmall.service.product.vo.CategoryTreeVO;
+import com.example.gmall.model.product.entity.BaseCategory1;
+import com.example.gmall.model.product.vo.CategoryTreeVO;
 
 import java.util.List;
 

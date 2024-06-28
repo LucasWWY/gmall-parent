@@ -1,8 +1,8 @@
 package com.example.gmall.weball.controller;
 
 import com.example.gmall.feign.search.SearchFeignClient;
-import com.example.gmall.search.vo.SearchParamVO;
-import com.example.gmall.search.vo.SearchRespVO;
+import com.example.gmall.model.search.vo.SearchParamVO;
+import com.example.gmall.model.search.vo.SearchRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

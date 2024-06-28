@@ -5,7 +5,7 @@ import com.example.gmall.common.constant.RedisConst;
 import com.example.gmall.common.result.Result;
 import com.example.gmall.common.result.ResultCodeEnum;
 import com.example.gmall.gateway.properties.AuthUrlProperties;
-import com.example.gmall.user.entity.UserInfo;
+import com.example.gmall.model.user.entity.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;

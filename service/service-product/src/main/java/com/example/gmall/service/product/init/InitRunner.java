@@ -1,7 +1,7 @@
 package com.example.gmall.service.product.init;
 
 import com.example.gmall.common.constant.RedisConst;
-import com.example.gmall.service.product.entity.SkuInfo;
+import com.example.gmall.model.product.entity.SkuInfo;
 import com.example.gmall.service.product.service.SkuInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -14,7 +14,11 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <modules>
+        <module>common</module>
+        <module>model</module>
+        <module>service</module>
         <module>mall-cache-starter</module>
+        <module>ware-manager</module>
     </modules>
 
     <properties>

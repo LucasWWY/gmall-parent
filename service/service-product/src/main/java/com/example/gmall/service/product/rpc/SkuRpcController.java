@@ -1,9 +1,9 @@
 package com.example.gmall.service.product.rpc;
 
 import com.example.gmall.common.result.Result;
-import com.example.gmall.service.product.entity.SkuImage;
-import com.example.gmall.service.product.entity.SkuInfo;
-import com.example.gmall.service.product.entity.SpuSaleAttr;
+import com.example.gmall.model.product.entity.SkuImage;
+import com.example.gmall.model.product.entity.SkuInfo;
+import com.example.gmall.model.product.entity.SpuSaleAttr;
 import com.example.gmall.service.product.service.SkuImageService;
 import com.example.gmall.service.product.service.SkuInfoService;
 import com.example.gmall.service.product.service.SpuSaleAttrService;

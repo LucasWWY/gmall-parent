@@ -1,9 +1,9 @@
 package com.example.gmall.user.controller;
 
 import com.example.gmall.common.result.Result;
-import com.example.gmall.user.entity.UserInfo;
+import com.example.gmall.model.user.entity.UserInfo;
 import com.example.gmall.user.service.UserInfoService;
-import com.example.gmall.user.vo.LoginSuccessVO;
+import com.example.gmall.model.user.vo.LoginSuccessVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

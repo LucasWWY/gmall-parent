@@ -1,6 +1,6 @@
 package com.example.gmall.service.product;
 
-import com.example.gmall.service.product.entity.SkuImage;
+import com.example.gmall.model.product.entity.SkuImage;
 import com.example.gmall.service.product.mapper.SkuImageMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

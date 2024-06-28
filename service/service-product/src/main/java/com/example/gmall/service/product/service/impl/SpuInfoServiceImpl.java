@@ -1,16 +1,16 @@
 package com.example.gmall.service.product.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.gmall.service.product.entity.SpuImage;
-import com.example.gmall.service.product.entity.SpuInfo;
-import com.example.gmall.service.product.entity.SpuSaleAttr;
-import com.example.gmall.service.product.entity.SpuSaleAttrValue;
+import com.example.gmall.model.product.entity.SpuImage;
+import com.example.gmall.model.product.entity.SpuInfo;
+import com.example.gmall.model.product.entity.SpuSaleAttr;
+import com.example.gmall.model.product.entity.SpuSaleAttrValue;
 import com.example.gmall.service.product.mapper.SpuInfoMapper;
 import com.example.gmall.service.product.service.SpuImageService;
 import com.example.gmall.service.product.service.SpuInfoService;
 import com.example.gmall.service.product.service.SpuSaleAttrService;
 import com.example.gmall.service.product.service.SpuSaleAttrValueService;
-import com.example.gmall.service.product.vo.SpuSaveInfoVO;
+import com.example.gmall.model.product.vo.SpuSaveInfoVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,9 @@
 package com.example.gmall.service.product.controller;
 
 import com.example.gmall.common.result.Result;
-import com.example.gmall.service.product.entity.BaseCategory1;
-import com.example.gmall.service.product.entity.BaseCategory2;
-import com.example.gmall.service.product.entity.BaseCategory3;
+import com.example.gmall.model.product.entity.BaseCategory1;
+import com.example.gmall.model.product.entity.BaseCategory2;
+import com.example.gmall.model.product.entity.BaseCategory3;
 import com.example.gmall.service.product.service.BaseCategory1Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

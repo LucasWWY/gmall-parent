@@ -1,0 +1,27 @@
+server:
+  port: 13000
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:mysql://192.168.200.100:3306/gmall_order?useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+  profiles:
+    include: sharding #专门有个文件配置sharding-jdbc
+
+#  rabbitmq:
+#    host: 192.168.200.100
+#    port: 5672
+#    username: admin
+#    password: admin
+#    publisher-confirm-type: correlated
+#    publisher-returns: true  #开启发送端返回功能；
+#    listener:
+#      simple:
+#        acknowledge-mode: manual  #消费端要手动ack
+#        prefetch: 15
+
+

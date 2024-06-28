@@ -1,9 +1,9 @@
 package com.example.gmall.feign.search;
 
 import com.example.gmall.common.result.Result;
-import com.example.gmall.search.Goods;
-import com.example.gmall.search.vo.SearchParamVO;
-import com.example.gmall.search.vo.SearchRespVO;
+import com.example.gmall.model.search.Goods;
+import com.example.gmall.model.search.vo.SearchParamVO;
+import com.example.gmall.model.search.vo.SearchRespVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

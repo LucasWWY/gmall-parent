@@ -9,19 +9,19 @@
         sale_attr_name
     </sql>
 
-    <resultMap id="BaseResultMap" type="com.example.gmall.service.product.entity.SpuSaleAttr">
+    <resultMap id="BaseResultMap" type="com.example.gmall.model.product.entity.SpuSaleAttr">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="spuId" column="spu_id" jdbcType="BIGINT"/>
             <result property="baseSaleAttrId" column="base_sale_attr_id" jdbcType="BIGINT"/>
             <result property="saleAttrName" column="sale_attr_name" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <resultMap id="baseSpuSaleAttrAndValueRM" type="com.example.gmall.service.product.entity.SpuSaleAttr" autoMapping="true">
+    <resultMap id="baseSpuSaleAttrAndValueRM" type="com.example.gmall.model.product.entity.SpuSaleAttr" autoMapping="true">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <!--<result property="spuId" column="spu_id" jdbcType="BIGINT"/>-->
         <!--<result property="baseSaleAttrId" column="base_sale_attr_id" jdbcType="BIGINT"/>-->
         <!--<result property="saleAttrName" column="sale_attr_name" jdbcType="VARCHAR"/>-->
-        <collection property="spuSaleAttrValueList" ofType="com.example.gmall.service.product.entity.SpuSaleAttrValue">
+        <collection property="spuSaleAttrValueList" ofType="com.example.gmall.model.product.entity.SpuSaleAttrValue">
             <id property="id" column="vid" jdbcType="BIGINT"/>
             <!--<result property="saleAttrValueName" column="sale_attr_value_name" jdbcType="VARCHAR"/>-->
         </collection>
@@ -60,7 +60,7 @@
         order by ssa.base_sale_attr_id, ssav.id;
 -- 固定顺序，base_sale_attr_id是另一张表，专门存放sale attr，而每个spu都有sale attr
     </select>
-    <select id="getValuesSkuJson" resultType="com.example.gmall.service.product.vo.ValueSkuJsonVO">
+    <select id="getValuesSkuJson" resultType="com.example.gmall.model.product.vo.ValueSkuJsonVO">
         SELECT a.sku_id
              GROUP_CONCAT(DISTINCT a.sale_attr_value_id ORDER BY a.sale_attr_value_id ASC SEPARATOR '|') value_json
         from (select skuav.sku_id,

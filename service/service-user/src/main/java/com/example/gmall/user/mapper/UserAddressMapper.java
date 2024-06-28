@@ -1,7 +1,7 @@
 package com.example.gmall.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.gmall.user.entity.UserAddress;
+import com.example.gmall.model.user.entity.UserAddress;
 
 /**
 * @author wangweiyedemacbook

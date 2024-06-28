@@ -3,7 +3,7 @@ package com.example.gmall.weball.controller;
 import com.example.gmall.common.result.Result;
 import com.example.gmall.feign.item.ItemSkuDetailFeignClient;
 import com.example.gmall.feign.product.ProductSkuDetailFeignClient;
-import com.example.gmall.service.product.vo.SkuDetailVO;
+import com.example.gmall.model.product.vo.SkuDetailVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

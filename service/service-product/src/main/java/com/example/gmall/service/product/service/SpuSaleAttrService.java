@@ -1,6 +1,6 @@
 package com.example.gmall.service.product.service;
 
-import com.example.gmall.service.product.entity.SpuSaleAttr;
+import com.example.gmall.model.product.entity.SpuSaleAttr;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

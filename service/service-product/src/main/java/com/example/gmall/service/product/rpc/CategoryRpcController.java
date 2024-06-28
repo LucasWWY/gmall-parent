@@ -2,7 +2,7 @@ package com.example.gmall.service.product.rpc;
 
 import com.example.gmall.common.result.Result;
 import com.example.gmall.service.product.service.BaseCategory1Service;
-import com.example.gmall.service.product.vo.CategoryTreeVO;
+import com.example.gmall.model.product.vo.CategoryTreeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

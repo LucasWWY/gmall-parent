@@ -1,8 +1,8 @@
 package com.example.gmall.search.service;
 
-import com.example.gmall.search.Goods;
-import com.example.gmall.search.vo.SearchParamVO;
-import com.example.gmall.search.vo.SearchRespVO;
+import com.example.gmall.model.search.Goods;
+import com.example.gmall.model.search.vo.SearchParamVO;
+import com.example.gmall.model.search.vo.SearchRespVO;
 
 /**
  * @author Lucas (Weiye) Wang

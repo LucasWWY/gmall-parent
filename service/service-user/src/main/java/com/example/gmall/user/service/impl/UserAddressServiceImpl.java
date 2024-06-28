@@ -1,7 +1,7 @@
 package com.example.gmall.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.gmall.user.entity.UserAddress;
+import com.example.gmall.model.user.entity.UserAddress;
 import com.example.gmall.user.mapper.UserAddressMapper;
 import com.example.gmall.user.service.UserAddressService;
 import org.springframework.stereotype.Service;

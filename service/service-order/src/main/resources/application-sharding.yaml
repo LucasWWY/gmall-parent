@@ -1,0 +1,128 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: m1,m2,m1s1,m1s2,m2s1,m2s2 #分库 + 主从
+      m1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.200.100:3306/gmall_order_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: 123456
+      m1s1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.200.100:3307/gmall_order_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: 123456
+      m1s2:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.200.100:3308/gmall_order_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: 123456
+
+      m2:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.200.100:3306/gmall_order_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: 123456
+      m2s1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.200.100:3307/gmall_order_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: 123456
+      m2s2:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.200.100:3308/gmall_order_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: 123456
+
+    ZZrules:
+      #读写分离相关配置
+      readwrite-splitting:
+        data-sources:
+          m1-rw-ds:
+            type: Static
+            props:
+              write-data-source-name: m1 #写源
+              read-data-source-names: m1s1,m1s2 #读源
+            load-balancer-name: haha
+          m2-rw-ds:
+            type: Static
+            props:
+              write-data-source-name: m2 #写源的名字
+              read-data-source-names: m2s1,m2s2 #读源
+            load-balancer-name: haha
+        load-balancers:
+          haha:
+            type: ROUND_ROBIN
+
+      #分片配置
+      sharding:
+        default-database-strategy: #配置分库策略
+          standard: #单列，对分库键取模然后根据余数分配到对应库中去
+            sharding-algorithm-name: order_shard_alg #下方
+            sharding-column: user_id # 分库键
+        tables: #table配置：当然，库虽然分了，但是每个库的逻辑表还是一样的
+          order_info:
+            actual-data-nodes: m$->{1..2}-rw-ds.order_info_$->{0..2}
+            table-strategy: #配置分表策略（这里的分表表示的是对特定值取模分配到对应表中去）
+              standard: #单列
+                sharding-column: user_id
+                sharding-algorithm-name: order_info_shard_alg
+            key-generate-strategy:
+              column: id
+              key-generator-name: oid_gen
+
+          order_detail:
+            actual-data-nodes: m$->{1..2}-rw-ds.order_detail_$->{0..2}
+            table-strategy: #配置分表策略
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: order_detail_shard_alg
+
+          order_status_log:
+            actual-data-nodes: m$->{1..2}-rw-ds.order_status_log_$->{0..2}
+            table-strategy: #配置分表策略
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: order_log_shard_alg
+
+          payment_info:
+            actual-data-nodes: m$->{1..2}-rw-ds.payment_info_$->{0..2}
+            table-strategy: #配置分表策略
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: payment_info_shard_alg
+
+
+        sharding-algorithms:
+          order_shard_alg: #分库算法：对分库键取模然后根据余数分配到对应库中去
+            type: INLINE
+            props:
+              algorithm-expression: m$->{user_id%2 + 1}-rw-ds #m1-rw-ds里面有一主二从，加入要添加一个order，进入m1-rw-ds后也只会进入m1主库
+          order_info_shard_alg:
+            type: INLINE
+            props:
+              algorithm-expression: order_info_$->{user_id%3} #进入m1主库后，根据分表算法选择进入order_info_0 order_info_2 order_info_3
+          order_detail_shard_alg:
+            type: INLINE
+            props:
+              algorithm-expression: order_detail_$->{user_id%3}
+          order_log_shard_alg:
+            type: INLINE
+            props:
+              algorithm-expression: order_status_log_$->{user_id%3}
+          payment_info_shard_alg:
+            type: INLINE
+            props:
+              algorithm-expression: payment_info_$->{user_id%3}
+
+        key-generators:
+          oid_gen:
+            type: SNOWFLAKE
+    props:
+      sql-show: true

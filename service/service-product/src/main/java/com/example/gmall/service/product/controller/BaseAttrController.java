@@ -1,8 +1,8 @@
 package com.example.gmall.service.product.controller;
 
 import com.example.gmall.common.result.Result;
-import com.example.gmall.service.product.entity.BaseAttrInfo;
-import com.example.gmall.service.product.entity.BaseAttrValue;
+import com.example.gmall.model.product.entity.BaseAttrInfo;
+import com.example.gmall.model.product.entity.BaseAttrValue;
 import com.example.gmall.service.product.service.BaseAttrInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

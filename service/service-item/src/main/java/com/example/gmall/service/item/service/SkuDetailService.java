@@ -1,6 +1,6 @@
 package com.example.gmall.service.item.service;
 
-import com.example.gmall.service.product.vo.SkuDetailVO;
+import com.example.gmall.model.product.vo.SkuDetailVO;
 
 /**
  * @author Lucas (Weiye) Wang

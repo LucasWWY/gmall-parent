@@ -1,10 +1,10 @@
 package com.example.gmall.search.service.impl;
 
-import com.example.gmall.search.Goods;
+import com.example.gmall.model.search.Goods;
 import com.example.gmall.search.repo.GoodsRepository;
 import com.example.gmall.search.service.SearchService;
-import com.example.gmall.search.vo.SearchParamVO;
-import com.example.gmall.search.vo.SearchRespVO;
+import com.example.gmall.model.search.vo.SearchParamVO;
+import com.example.gmall.model.search.vo.SearchRespVO;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;

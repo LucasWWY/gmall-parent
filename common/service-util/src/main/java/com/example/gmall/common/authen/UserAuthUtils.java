@@ -1,7 +1,7 @@
 package com.example.gmall.common.authen;
 
 import com.example.gmall.common.constant.RedisConst;
-import com.example.gmall.user.vo.UserAuthInfoVO;
+import com.example.gmall.model.user.vo.UserAuthInfoVO;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -39,6 +39,13 @@ public class UserAuthUtils {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
         return request;
+    }
+
+    public static Long getUserId() {
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
+        String userId = request.getHeader(RedisConst.USER_ID_HEADER);
+        return Long.valueOf(userId);
     }
 
 }

@@ -2,9 +2,9 @@ package com.example.gmall.service.product.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.gmall.common.result.Result;
-import com.example.gmall.service.product.entity.SkuInfo;
+import com.example.gmall.model.product.entity.SkuInfo;
 import com.example.gmall.service.product.service.SkuInfoService;
-import com.example.gmall.service.product.vo.SkuSaveInfoVO;
+import com.example.gmall.model.product.vo.SkuSaveInfoVO;
 import com.example.gmall.starter.cache.service.CacheService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.example.gmall.service.product.mapper;
 
-import com.example.gmall.service.product.entity.SkuInfo;
+import com.example.gmall.model.product.entity.SkuInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

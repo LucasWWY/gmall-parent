@@ -2,10 +2,10 @@ package com.example.gmall.service.product.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.gmall.service.product.entity.SpuSaleAttr;
+import com.example.gmall.model.product.entity.SpuSaleAttr;
 import com.example.gmall.service.product.service.SpuSaleAttrService;
 import com.example.gmall.service.product.mapper.SpuSaleAttrMapper;
-import com.example.gmall.service.product.vo.ValueSkuJsonVO;
+import com.example.gmall.model.product.vo.ValueSkuJsonVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

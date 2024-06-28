@@ -1,7 +1,7 @@
 package com.example.search.search;
 
 import com.example.gmall.search.service.SearchService;
-import com.example.gmall.search.vo.SearchParamVO;
+import com.example.gmall.model.search.vo.SearchParamVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

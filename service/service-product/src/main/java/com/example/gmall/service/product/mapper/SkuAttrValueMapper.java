@@ -1,7 +1,7 @@
 package com.example.gmall.service.product.mapper;
 
-import com.example.gmall.search.SearchAttr;
-import com.example.gmall.service.product.entity.SkuAttrValue;
+import com.example.gmall.model.search.SearchAttr;
+import com.example.gmall.model.product.entity.SkuAttrValue;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
