@@ -1,5 +1,6 @@
 package com.example.gmall.service.order;
 
+import com.example.gmall.common.annotation.EnableMqService;
 import com.example.gmall.common.annotation.EnableUserAuthFeignInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -20,6 +21,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         "com.example.gmall.feign.ware"
 })
 @EnableUserAuthFeignInterceptor //在远程调用之前 feign拦截器会向requestTemplate中添加用户信息，这样新request就可以携带用户信息到下一个微服务
+@EnableMqService
 @MapperScan(basePackages = "com.example.gmall.service.order.mapper")
 @SpringCloudApplication
 public class OrderApplication {

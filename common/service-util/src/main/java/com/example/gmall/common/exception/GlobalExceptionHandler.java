@@ -66,6 +66,6 @@ public class GlobalExceptionHandler {
             String message = error.getDefaultMessage(); //错误消息
             errMap.put(field,message);
         }
-        return Result.build(errMap, ResultCodeEnum.INVAILD_PARAM);
+        return Result.build(errMap, ResultCodeEnum.INVALID_PARAM);
     }
 }
