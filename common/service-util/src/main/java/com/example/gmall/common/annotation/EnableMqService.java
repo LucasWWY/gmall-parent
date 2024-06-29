@@ -16,7 +16,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({MqService.class})
-@EnableRabbit //
+@EnableRabbit //开启基于注解的rabbit功能 可以使用@RabbitListener
 public @interface EnableMqService {
 }
 

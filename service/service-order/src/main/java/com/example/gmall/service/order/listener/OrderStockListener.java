@@ -2,6 +2,7 @@ package com.example.gmall.service.order.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.example.gmall.common.config.mq.MqService;
+import com.example.gmall.common.mq.MqService;
 import com.example.gmall.mq.ware.WareStockResultMsg;
 import com.example.gmall.service.order.biz.OrderBizService;
 import com.rabbitmq.client.Channel;

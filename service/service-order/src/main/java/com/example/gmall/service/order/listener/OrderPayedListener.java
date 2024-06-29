@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.example.gmall.common.config.mq.MqService;
 import com.example.gmall.common.constant.MqConst;
+import com.example.gmall.common.mq.MqService;
 import com.example.gmall.mq.ware.WareStockMsg;
 import com.example.gmall.service.order.biz.OrderBizService;
 import com.example.gmall.service.order.service.OrderDetailService;

@@ -7,6 +7,7 @@ import com.example.gmall.common.config.mq.MqService;
 import com.example.gmall.common.constant.MqConst;
 import com.example.gmall.common.constant.RedisConst;
 import com.example.gmall.common.execption.GmallException;
+import com.example.gmall.common.mq.MqService;
 import com.example.gmall.common.result.ResultCodeEnum;
 import com.example.gmall.feign.cart.CartFeignClient;
 import com.example.gmall.feign.product.ProductSkuDetailFeignClient;
@@ -224,8 +225,8 @@ public class OrderBizServiceImpl implements OrderBizService {
         //3、删除购物车中选中的商品
         cartFeignClient.deleteChecked();
 
-        //4、发送订单创建成功消息
-        mqService.send(orderInfo, MqConst.ORDER_EVENT_EXCHANGE,MqConst.ORDER_CREATE_RK);
+        //4、向MQ发送订单创建成功消息 - 利用MQ完成自动关单 30min
+        mqService.send(orderInfo, MqConst.ORDER_EVENT_EXCHANGE, MqConst.ORDER_CREATE_RK);
 
         return orderId;
     }
@@ -332,13 +333,13 @@ x
         //只有订单未支付的情况下才需要关闭；
         //process_status=CLOSED
         //order_status=CLOSED
-        //能来关单都是超了30min的订单消息； 是幂等的
+        //这两个条件保证关单操作是幂等的
         boolean update = orderInfoService.lambdaUpdate()
-                .set(OrderInfo::getOrderStatus, closed.getOrderStatus().name())
-                .set(OrderInfo::getProcessStatus, closed.name())
+                .set(OrderInfo::getOrderStatus, closed.getComment())
+                .set(OrderInfo::getProcessStatus, closed.getComment())
                 .eq(OrderInfo::getId, id)
-                .eq(OrderInfo::getUserId, userId)
-                .eq(OrderInfo::getOrderStatus, OrderStatus.UNPAID.name()) //这两个eq保证关单的幂等
+                .eq(OrderInfo::getUserId, userId) //分片键
+                .eq(OrderInfo::getOrderStatus, OrderStatus.UNPAID.name()) //这两个eq保证关单的幂等idempotence
                 .eq(OrderInfo::getProcessStatus, ProcessStatus.UNPAID.name())//这两个eq保证关单的幂等
                 .update();
         log.info("订单：{},关闭：{}",id,update);

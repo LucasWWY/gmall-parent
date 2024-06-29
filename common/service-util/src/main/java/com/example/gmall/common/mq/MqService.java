@@ -41,7 +41,7 @@ public class MqService {
          * 失败：
          *  交换机不存在: ack=false - rabbitTemplate.convertAndSend("??","a","哈哈哈哈");
          *  队列不存在：  ack=true - rabbitTemplate.convertAndSend("hello","ab","哈哈哈哈")
-         * 因为confirm回调来自exchange，所以队列不存在但交换机存在的情况仍然是true
+         *  （因为confirm回调来自exchange，所以队列不存在但交换机存在的情况仍然是true）
          * correlationData： 关联的数据
          * ack：  回复状态
          * cause: 原因
@@ -74,7 +74,7 @@ public class MqService {
         });
 
         //设置重试模板
-        rabbitTemplate.setRetryTemplate(new RetryTemplate()); //不再有回调逻辑
+        rabbitTemplate.setRetryTemplate(new RetryTemplate()); //不再有回调逻辑（ack）？？？？
     }
 
     /**
@@ -97,13 +97,13 @@ public class MqService {
      */
     public void retry(Channel channel, long tag, String content, Integer retryCount) throws IOException {
         String md5 = MD5.encrypt(content);
-        //2、同一个消息最多重试5次
+        //同一个消息最多重试5次
         Long increment = redisTemplate.opsForValue().increment("msg:count:" + md5);
         if(increment <= retryCount){
-            log.info("消费失败；重新入队；次数：{}",increment);  //导致无限入队消费，cpu打满
+            log.info("消费失败；重新入队；次数：{}", increment);  //导致无限入队消费，cpu打满
             channel.basicNack(tag,false,true);
         }else {
-            log.error("消费重试超过最大限定次数：已达到{}，记录到数据库，不在重试，等待人工处理",increment);
+            log.error("消费重试超过最大限定次数：已达到{}，记录到数据库，不在重试，等待人工处理", increment);
             redisTemplate.delete("msg:count:" + md5);
             channel.basicAck(tag,false);
         }
