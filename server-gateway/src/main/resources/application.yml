@@ -31,6 +31,11 @@ spring:
           predicates:
             - Path=/api/order/** #前端ajax请求
 
+        - id: payment_route
+          uri: lb://service-pay
+          predicates:
+            - Path=/api/payment/** #前端ajax请求
+
         #客户端，请求url：http://gmall.com/ 因为有先后匹配顺序 + 精确匹配，所以要放在后面
         - id: weball_route
           uri: lb://web-all # 路由转发地址，转给哪个微服务（逻辑名称） lb: load balance

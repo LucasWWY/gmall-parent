@@ -12,7 +12,7 @@ public class MqConst {
     public static final String ORDER_DELAY_QUEUE = "order-delay-queue";
     public static final String  ORDER_TIMEOUT_RK = "order.timeout";
     public static final String ORDER_CREATE_RK = "order.create";
-    public static final String ORDER_PAYED_RK = "order.payed";
+    public static final String ORDER_PAID_RK = "order.paid";
     public static final String ORDER_LOGISTIC_RK = "order.logistic";
     public static final String ORDER_DEAD_QUEUE = "order-dead-queue";
     public static final String ORDER_LOGISTIC_QUEUE = "order-logistic-queue";

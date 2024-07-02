@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class MqConfig { //自动创建 X Q binding
+public class MqConfig { //通过代码 自动创建 X Q binding
 
     @Bean
     public Exchange orderEventExchange(){
@@ -120,7 +120,7 @@ public class MqConfig { //自动创建 X Q binding
                 MqConst.ORDER_PAYED_QUEUE,
                 Binding.DestinationType.QUEUE,
                 MqConst.ORDER_EVENT_EXCHANGE,
-                MqConst.ORDER_PAYED_RK,
+                MqConst.ORDER_PAID_RK,
                 null
         );
     }

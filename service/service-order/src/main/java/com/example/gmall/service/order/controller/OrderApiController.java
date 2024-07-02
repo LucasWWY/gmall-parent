@@ -33,8 +33,7 @@ public class OrderApiController {
 
 
     @PostMapping("/orderSplit")
-    public List<OrderSplitReps> orderSplit(@RequestParam("orderId") Long orderId,
-                                           @RequestParam("wareSkuMap") String json){
+    public List<OrderSplitReps> orderSplit(@RequestParam("orderId") Long orderId, @RequestParam("wareSkuMap") String json){
 
         //拆单：把一个大订单，拆分成多个子订单
         List<OrderSplitReps> splitReps =  orderBizService.orderSplit(orderId,json);

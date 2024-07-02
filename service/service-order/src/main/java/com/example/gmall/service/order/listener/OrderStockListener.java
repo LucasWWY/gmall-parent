@@ -1,9 +1,8 @@
 package com.example.gmall.service.order.listener;
 
 import com.alibaba.fastjson.JSON;
-import com.example.gmall.common.config.mq.MqService;
 import com.example.gmall.common.mq.MqService;
-import com.example.gmall.mq.ware.WareStockResultMsg;
+import com.example.gmall.model.mq.ware.WareStockResultMsg;
 import com.example.gmall.service.order.biz.OrderBizService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ public class OrderStockListener {
     MqService mqService;
 
     /**
-     * 也可以用注解的方式声明监听哪个队列，如果没有也会自动创建
+     * 也可以用注解的方式声明监听哪个队列，如果没有也会自动创建，不再需要在MqConfig中创建Bean了
      */
     @RabbitListener(bindings = {
             @QueueBinding(
@@ -44,12 +43,10 @@ public class OrderStockListener {
             )
     })
     public void listen(Message message, Channel channel) throws IOException {
-
         //{"orderId":"814072820832141312","status":"DEDUCTED"}
         long tag = message.getMessageProperties().getDeliveryTag();
         String content = new String(message.getBody());
         try {
-
             WareStockResultMsg result = JSON.parseObject(content, WareStockResultMsg.class);
             log.info("监听到库存扣减结果：{}",content);
 

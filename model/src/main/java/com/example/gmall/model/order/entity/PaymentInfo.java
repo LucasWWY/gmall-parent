@@ -23,9 +23,7 @@ public class PaymentInfo implements Serializable {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 
-     */
+    //分片键
     private Long userId;
 
     /**

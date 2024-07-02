@@ -17,6 +17,8 @@ import com.example.gmall.model.cart.entity.CartItem;
 import com.example.gmall.model.enums.OrderStatus;
 import com.example.gmall.model.enums.PaymentWay;
 import com.example.gmall.model.enums.ProcessStatus;
+import com.example.gmall.model.mq.logistic.OrderLogisticMsg;
+import com.example.gmall.model.mq.ware.WareStockResultMsg;
 import com.example.gmall.model.order.entity.OrderDetail;
 import com.example.gmall.model.order.entity.OrderInfo;
 import com.example.gmall.model.order.vo.OrderConfirmRespVO;
@@ -159,10 +161,16 @@ public class OrderBizServiceImpl implements OrderBizService {
 
         //1、校验令牌：防止重复提交
         //在getOrderConfirmData()生成订单数据的时候，已经提前在redis中放置了一个防重复提交的token：流水号
-        Boolean delete = redisTemplate.delete(RedisConst.REPEAT_TOKEN + tradeNo);
+        Boolean delete = redisTemplate.delete(RedisConst.REPEAT_TOKEN + tradeNo); //Redis 的 delete 操作是原子性的，因此在单个实例的 Redis 中可以保证高并发下的操作安全。
         if(!delete){ //删除成功，说明第一次提交
             throw new GmallException(ResultCodeEnum.REPEAT_REQUEST);
         }
+        //不用删除操作的话；如果以orderToken和redisToken相互比较的方式校验令牌，那么仍然组织不了重复提交
+        //假如用户快速点击了两次“提交订单”
+        //1. 每个请求通常由 Web 服务器（如 Tomcat）分配给一个线程处理，这两个请求会被分配给不同的线程处理
+        //2. HTTP 请求是无状态的，服务器通常会并发处理多个请求，顺序并不保证
+        //所以可能两个请求在删除redisToken都通过了if(orderToken和redisToken比较)
+        //为了保证不重复提交，必须保证 对比+删除 原子性，所以必须用lua脚本
 
         //2、校验库存
         List<OrderSubmitVO.OrderDetailListDTO> noStockSku = submitVO.getOrderDetailList()
@@ -296,8 +304,7 @@ x
     }
 
     //准备order_detail数据
-    private List<OrderDetail> prepareOrderDetails(OrderSubmitVO submitVO,
-                                                  OrderInfo orderInfo) {
+    private List<OrderDetail> prepareOrderDetails(OrderSubmitVO submitVO, OrderInfo orderInfo) {
         List<OrderDetail> details = submitVO.getOrderDetailList()
                 .stream()
                 .map(item -> {
@@ -328,7 +335,6 @@ x
 
     @Override
     public void closeOrder(Long id, Long userId) {
-
         ProcessStatus closed = ProcessStatus.CLOSED;
         //只有订单未支付的情况下才需要关闭；
         //process_status=CLOSED
@@ -347,25 +353,25 @@ x
 
     @Override
     public void payedOrder(String out_trade_no, Long userId) {
+        //关单 和 支付 都是监听器
         //关单消息和支付消息如果同时抵达，无论谁先执行，最终结果都应该是以支付状态为准的。
         //1、关单先运行，改成已关闭。支付后运行就应该改回来为已支付
-        //2、支付先运行，改为已支付。关单后运行就什么都不做
-        //订单是未支付或者是已关闭，都可以改为已支付
+        //2、支付先运行，改为已支付。关单后运行就什么都不做，关单的lambdaUpdate的eq就不满足了，因为status变成PAID了，如上closeOrder方法所示
+        //订单是未支付或者是已关闭，都可以改为已支付 赚钱要紧
         //update OrderStatus = 已支付 and ProcessStatus=已支付
         // where out_trade_no=? and user_id=? and
         // OrderStatus IN (未支付，已关闭) and ProcessStatus(未支付、已关闭)
-        ProcessStatus payed = ProcessStatus.PAID;
+        ProcessStatus paid = ProcessStatus.PAID;
         //修改订单为已支付状态
         boolean update = orderInfoService.lambdaUpdate()
-                .set(OrderInfo::getOrderStatus, payed.getOrderStatus().name())
-                .set(OrderInfo::getProcessStatus, payed.name())
+                .set(OrderInfo::getOrderStatus, paid.getOrderStatus().name())
+                .set(OrderInfo::getProcessStatus, paid.name())
                 .eq(OrderInfo::getUserId, userId)
                 .eq(OrderInfo::getOutTradeNo, out_trade_no)
                 .in(OrderInfo::getOrderStatus, OrderStatus.UNPAID.name(), OrderStatus.CLOSED.name())
                 .in(OrderInfo::getProcessStatus, ProcessStatus.UNPAID.name(), ProcessStatus.CLOSED.name())
                 .update();
         log.info("修改{}订单，已支付状态：{}",out_trade_no,update);
-
     }
 
     @Override
@@ -400,8 +406,6 @@ x
             //给等待物流配送的订单队列发送消息
             mqService.send(msg,MqConst.ORDER_EVENT_EXCHANGE,MqConst.ORDER_LOGISTIC_RK);
         }
-
-
     }
 
     @Override
@@ -551,7 +555,7 @@ x
 
 
     //    @PostMapping("/xxxxx")
-    public String submitOrdertest(@RequestParam("tradeNo") String tradeNo){
+    public String submitOrderTest(@RequestParam("tradeNo") String tradeNo){
         //1、利用删除比对机制： 缺点：必须提前放好东西
         Boolean delete = redisTemplate.delete("repeat:token:" + tradeNo);
         if(delete){

@@ -1,6 +1,6 @@
 package com.example.gmall.service.order.biz;
 
-import com.example.gmall.mq.ware.WareStockResultMsg;
+import com.example.gmall.model.mq.ware.WareStockResultMsg;
 import com.example.gmall.model.order.entity.OrderInfo;
 import com.example.gmall.model.order.vo.OrderConfirmRespVO;
 import com.example.gmall.model.order.vo.OrderSplitReps;
